@@ -29,7 +29,7 @@ export default function AdvertisingBanner(): React.JSX.Element {
 
   if (loading) {
     return (
-      <div className="bg-bg-base border border-border-default rounded-xl shadow-card p-6">
+      <div className="bg-card border border-border rounded-xl shadow-lg p-6">
         <div className="flex items-center justify-center py-8">
           <LoadingSpinner />
           <span className="ml-3 text-text-secondary">Loading ads...</span>
@@ -45,7 +45,7 @@ export default function AdvertisingBanner(): React.JSX.Element {
   const currentAd = ads[currentAdIndex]
 
   return (
-    <div className="bg-bg-base border border-border-default rounded-xl shadow-card overflow-hidden">
+    <div className="bg-card border border-border rounded-xl shadow-lg overflow-hidden">
       <div className="relative">
         <div
           onClick={() => handleAdClick(currentAd)}

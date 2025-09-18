@@ -25,12 +25,19 @@ export default function GoogleMap(): React.JSX.Element {
 
   const getCenterCoordinates = (): { lat: number; lng: number } => {
     if (selectedCity) {
-      // Use first pharmacy in selected city as center
-      const cityPharmacies = pharmacies.filter(p => p.city_id === selectedCity.id)
+      // Use first pharmacy in selected city with valid coordinates as center
+      const cityPharmacies = pharmacies.filter(p => {
+        if (!p.city_id || p.city_id !== selectedCity.id || !p.lat || !p.lng) {
+          return false
+        }
+        const lat = Number(p.lat)
+        const lng = Number(p.lng)
+        return !isNaN(lat) && !isNaN(lng)
+      })
       if (cityPharmacies.length > 0) {
         return {
-          lat: cityPharmacies[0].lat || 0,
-          lng: cityPharmacies[0].lng || 0
+          lat: Number(cityPharmacies[0].lat),
+          lng: Number(cityPharmacies[0].lng)
         }
       }
     }
@@ -52,17 +59,11 @@ export default function GoogleMap(): React.JSX.Element {
       mapInstanceRef.current = new google.maps.Map(mapRef.current, {
         center,
         zoom: 13,
+        mapId: 'DEMO_MAP_ID',
         mapTypeControl: true,
         streetViewControl: true,
         fullscreenControl: true,
-        zoomControl: true,
-        styles: [
-          {
-            featureType: 'poi',
-            elementType: 'labels',
-            stylers: [{ visibility: 'off' }]
-          }
-        ]
+        zoomControl: true
       })
 
       updateMarkers()
@@ -75,14 +76,27 @@ export default function GoogleMap(): React.JSX.Element {
     if (!mapInstanceRef.current) return
 
     // Clear existing markers
-    markersRef.current.forEach(markerData => markerData.marker.setMap(null))
+    markersRef.current.forEach(markerData => markerData.marker.map = null)
     markersRef.current = []
 
     // Create new markers
     pharmacies.forEach((pharmacy: Pharmacy) => {
+      // Skip pharmacies without valid coordinates
+      if (!pharmacy.lat || !pharmacy.lng) {
+        return
+      }
+
+      // Convert to numbers and validate
+      const lat = Number(pharmacy.lat)
+      const lng = Number(pharmacy.lng)
+
+      if (isNaN(lat) || isNaN(lng)) {
+        return
+      }
+
       const position = {
-        lat: pharmacy.lat || 0,
-        lng: pharmacy.lng || 0
+        lat,
+        lng
       }
 
       // Determine marker color based on pharmacy type
@@ -93,18 +107,21 @@ export default function GoogleMap(): React.JSX.Element {
         markerColor = '#f08c1a' // orange for Sunday open
       }
 
-      const marker = new google.maps.Marker({
+      // Create marker element
+      const markerElement = document.createElement('div')
+      markerElement.style.width = '16px'
+      markerElement.style.height = '16px'
+      markerElement.style.borderRadius = '50%'
+      markerElement.style.backgroundColor = markerColor
+      markerElement.style.border = '2px solid white'
+      markerElement.style.cursor = 'pointer'
+      markerElement.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)'
+
+      const marker = new google.maps.marker.AdvancedMarkerElement({
         position,
         map: mapInstanceRef.current,
         title: language === 'me' ? pharmacy.name_me : (pharmacy.name_en || pharmacy.name_me),
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          fillColor: markerColor,
-          fillOpacity: 1,
-          strokeColor: '#ffffff',
-          strokeWeight: 2,
-          scale: 8
-        }
+        content: markerElement
       })
 
       // Create info window
@@ -118,20 +135,30 @@ export default function GoogleMap(): React.JSX.Element {
           if (iw) iw.close()
         })
 
-        infoWindow.open(mapInstanceRef.current, marker)
+        infoWindow.open({
+          map: mapInstanceRef.current,
+          anchor: marker
+        })
         dispatch(setSelectedPharmacy(pharmacy))
       })
 
       markersRef.current.push({ marker, infoWindow })
     })
 
-    // Adjust map bounds to fit all markers
-    if (pharmacies.length > 0) {
+    // Adjust map bounds to fit all markers with valid coordinates
+    const validPharmacies = pharmacies.filter(pharmacy => {
+      if (!pharmacy.lat || !pharmacy.lng) return false
+      const lat = Number(pharmacy.lat)
+      const lng = Number(pharmacy.lng)
+      return !isNaN(lat) && !isNaN(lng)
+    })
+
+    if (validPharmacies.length > 0) {
       const bounds = new google.maps.LatLngBounds()
-      pharmacies.forEach((pharmacy: Pharmacy) => {
+      validPharmacies.forEach((pharmacy: Pharmacy) => {
         bounds.extend({
-          lat: pharmacy.lat || 0,
-          lng: pharmacy.lng || 0
+          lat: Number(pharmacy.lat),
+          lng: Number(pharmacy.lng)
         })
       })
       mapInstanceRef.current.fitBounds(bounds)
@@ -174,7 +201,7 @@ export default function GoogleMap(): React.JSX.Element {
     return () => {
       clearTimeout(initTimer)
       markersRef.current.forEach(({ marker }: MarkerData) => {
-        if (marker) marker.setMap(null)
+        if (marker) marker.map = null
       })
       markersRef.current = []
     }
@@ -205,9 +232,9 @@ export default function GoogleMap(): React.JSX.Element {
 
       // Open the corresponding info window
       const markerData = markersRef.current.find(({ marker }: MarkerData) => {
-        const markerPos = marker.getPosition()
-        return Math.abs(markerPos.lat() - position.lat) < 0.0001 &&
-               Math.abs(markerPos.lng() - position.lng) < 0.0001
+        const markerPos = marker.position
+        return Math.abs(markerPos.lat - position.lat) < 0.0001 &&
+               Math.abs(markerPos.lng - position.lng) < 0.0001
       })
 
       if (markerData) {

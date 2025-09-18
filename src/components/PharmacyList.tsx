@@ -32,13 +32,13 @@ export default function PharmacyList(): React.JSX.Element {
   }
 
   return (
-    <div className="bg-card border border-primary rounded-xl shadow-xl rainbow-border pulse-neon">
-      <div className="p-6 border-b border-primary bg-background-secondary rainbow-border">
+    <div className="bg-card border border-border rounded-xl shadow-lg">
+      <div className="p-6 border-b border-border bg-background-secondary">
         <div className="flex items-center justify-between">
-          <h3 className="text-xl font-semibold text-text-primary neon-text">
+          <h3 className="text-xl font-semibold text-text-primary">
             Pharmacies
           </h3>
-          <span className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium shadow-button pulse-neon neon-text">
+          <span className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md">
             {pharmacies.length}
           </span>
         </div>
@@ -57,24 +57,24 @@ export default function PharmacyList(): React.JSX.Element {
             <div
               key={pharmacy.id}
               onClick={() => handlePharmacyClick(pharmacy)}
-              className={`p-5 border-b border-primary last:border-b-0 cursor-pointer transition-all duration-200 hover:bg-card-hover hover:pulse-neon ${
+              className={`p-5 border-b border-border last:border-b-0 cursor-pointer transition-all duration-200 hover:bg-card-hover ${
                 selectedPharmacy?.id === pharmacy.id
-                  ? 'bg-primary-lighter border-l-4 border-l-primary shadow-md pulse-neon rainbow-border'
-                  : 'border-l-4 border-l-transparent hover:border-l-primary hover:rainbow-border'
+                  ? 'bg-primary/10 border-l-4 border-l-primary shadow-md'
+                  : 'border-l-4 border-l-transparent hover:border-l-primary'
               }`}
             >
               <div className="flex justify-between items-start mb-3">
-                <h4 className="font-semibold text-text-primary leading-tight text-lg neon-text">
+                <h4 className="font-semibold text-text-primary leading-tight text-lg">
                   {language === 'me' ? pharmacy.name_me : (pharmacy.name_en || pharmacy.name_me)}
                 </h4>
                 <div className="flex gap-2 ml-3 flex-shrink-0">
                   {pharmacy.is_24h && (
-                    <span className="inline-flex items-center px-3 py-1 text-xs font-medium bg-success text-white rounded-full shadow-sm pulse-neon neon-text">
+                    <span className="inline-flex items-center px-3 py-1 text-xs font-medium bg-success text-white rounded-full shadow-sm">
                       24/7
                     </span>
                   )}
                   {pharmacy.open_sunday && (
-                    <span className="inline-flex items-center px-3 py-1 text-xs font-medium bg-warning text-white rounded-full shadow-sm pulse-neon neon-text">
+                    <span className="inline-flex items-center px-3 py-1 text-xs font-medium bg-warning text-white rounded-full shadow-sm">
                       Sun
                     </span>
                   )}

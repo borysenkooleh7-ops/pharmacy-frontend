@@ -57,7 +57,7 @@ export default function BenefitsSection(): React.JSX.Element {
       </div>
 
       <div className="mt-14 flex justify-center">
-        <div className="inline-flex items-center gap-3 px-6 py-4 bg-success text-white border-2 border-success rounded-lg hover:bg-success-hover transition-all duration-200 shadow-colored-success hover:shadow-hover">
+        <div className="inline-flex items-center gap-3 px-6 py-4 bg-success text-white border-2 border-success rounded-lg hover:bg-success-hover transition-all duration-200 shadow-md hover:shadow-lg">
           <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
           <span className="text-sm font-semibold">
             {t('liveDataUpdate') || 'Live pharmacy data - Updated daily'}

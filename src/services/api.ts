@@ -105,9 +105,30 @@ class ApiService {
 
   // Submissions
   async createSubmission(submissionData: PharmacySubmissionData): Promise<any> {
-    const response = await this.request<any>('/submissions', {
+    const response = await this.request<any>('/pharmacy-submissions', {
       method: 'POST',
       body: JSON.stringify(submissionData),
+    })
+    return response.data
+  }
+
+  // Admin submissions
+  async getSubmissions(adminKey: string): Promise<any[]> {
+    const response = await this.request<any[]>('/pharmacy-submissions', {
+      headers: {
+        'x-admin-key': adminKey
+      }
+    })
+    return response.data || []
+  }
+
+  async updateSubmissionStatus(id: string, status: string, adminKey: string): Promise<any> {
+    const response = await this.request<any>(`/pharmacy-submissions/${id}`, {
+      method: 'PUT',
+      headers: {
+        'x-admin-key': adminKey
+      },
+      body: JSON.stringify({ status })
     })
     return response.data
   }

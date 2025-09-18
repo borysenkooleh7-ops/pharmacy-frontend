@@ -42,26 +42,26 @@ export default function SearchSection(): React.JSX.Element {
   }
 
   return (
-    <div className="bg-card shadow-xl border border-primary rounded-xl p-8 mb-8 pulse-neon rainbow-border">
+    <div className="bg-card shadow-lg border border-border rounded-xl p-8 mb-8">
       <div className="max-w-2xl mx-auto">
         {/* Search Type Tabs */}
-        <div className="flex mb-6 bg-background-secondary rounded-lg p-1 border border-primary rainbow-border">
+        <div className="flex mb-6 bg-background-secondary rounded-lg p-1 border border-border">
           <button
             onClick={() => handleSearchTypeChange('pharmacy')}
-            className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all duration-200 neon-text ${
+            className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
               searchType === 'pharmacy'
-                ? 'bg-primary text-white shadow-button pulse-neon'
-                : 'text-text-secondary hover:text-text-primary hover:bg-card-hover hover:neon-text'
+                ? 'bg-primary text-white shadow-md'
+                : 'text-text-secondary hover:text-text-primary hover:bg-card-hover'
             }`}
           >
             {t('searchPlaceholder').split(' ')[0]}
           </button>
           <button
             onClick={() => handleSearchTypeChange('medicine')}
-            className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all duration-200 neon-text ${
+            className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
               searchType === 'medicine'
-                ? 'bg-success text-white shadow-button pulse-neon'
-                : 'text-text-secondary hover:text-text-primary hover:bg-card-hover hover:neon-text'
+                ? 'bg-success text-white shadow-md'
+                : 'text-text-secondary hover:text-text-primary hover:bg-card-hover'
             }`}
           >
             {t('medicineSearch')}
@@ -75,13 +75,13 @@ export default function SearchSection(): React.JSX.Element {
             value={searchType === 'pharmacy' ? filters.search : medicineSearchTerm}
             onChange={searchType === 'pharmacy' ? handleSearchChange : handleMedicineSearchChange}
             placeholder={searchType === 'pharmacy' ? t('searchPlaceholder') : t('medicineSearch')}
-            className="w-full px-4 py-4 pl-12 text-lg bg-background border-2 border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 text-text-primary placeholder:text-text-tertiary shadow-lg hover:shadow-xl rainbow-border neon-text"
+            className="w-full px-4 py-4 pl-12 text-lg bg-background border-2 border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 text-text-primary placeholder:text-text-tertiary shadow-sm focus:shadow-md"
           />
-          <div className="absolute left-4 top-1/2 transform -translate-y-1/2 pulse-neon">
+          <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
             {searchType === 'pharmacy' ? (
-              <PharmacyIcon className="w-5 h-5 text-primary neon-text" />
+              <PharmacyIcon className="w-5 h-5 text-primary" />
             ) : (
-              <MedicineIcon className="w-5 h-5 text-success neon-text" />
+              <MedicineIcon className="w-5 h-5 text-success" />
             )}
           </div>
           {loading.medicines && searchType === 'medicine' && (
@@ -90,6 +90,15 @@ export default function SearchSection(): React.JSX.Element {
             </div>
           )}
         </div>
+
+        {/* Error Display */}
+        {error.medicines && searchType === 'medicine' && (
+          <div className="mt-4 p-4 bg-destructive-light border border-destructive rounded-lg">
+            <p className="text-destructive text-sm font-medium">
+              Failed to search medicines. Please try again.
+            </p>
+          </div>
+        )}
 
         {/* Medicine Search Results */}
         {searchType === 'medicine' && medicines.length > 0 && (
@@ -112,6 +121,13 @@ export default function SearchSection(): React.JSX.Element {
                 )}
               </div>
             ))}
+          </div>
+        )}
+
+        {/* No Results Message */}
+        {searchType === 'medicine' && medicineSearchTerm.length > 2 && medicines.length === 0 && !loading.medicines && !error.medicines && (
+          <div className="mt-4 p-4 bg-background-secondary border border-border-light rounded-lg text-center">
+            <p className="text-text-secondary">No medicines found for "{medicineSearchTerm}"</p>
           </div>
         )}
       </div>

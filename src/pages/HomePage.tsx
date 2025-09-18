@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { fetchPharmacies, clearFilters } from '../store/pharmacySlice'
 import { useAppDispatch, useAppSelector } from '../hooks/redux'
+import SearchSection from '../components/SearchSection'
+import FilterSection from '../components/FilterSection'
 import MapSection from '../components/MapSection'
 import PharmacyList from '../components/PharmacyList'
 import AdvertisingBanner from '../components/AdvertisingBanner'
@@ -44,18 +46,24 @@ export default function HomePage(): React.JSX.Element {
   }
 
   return (
-    <div className="min-h-screen bg-background-tertiary">
-      <div className="container mx-auto px-4 py-6">
-        {/* Error Message */}
-        {error.pharmacies && (
-          <ErrorMessage
-            error={error.pharmacies}
-            onRetry={handleRetryPharmacies}
-            className="mb-6"
-          />
-        )}
+    <div className="min-h-screen bg-background">
+      {/* Error Message */}
+      {error.pharmacies && (
+        <ErrorMessage
+          error={error.pharmacies}
+          onRetry={handleRetryPharmacies}
+          className="mb-6"
+        />
+      )}
 
-        {/* Simple Layout: Left sidebar + Main content */}
+      {/* Search Section */}
+      <SearchSection />
+
+      {/* Filter Section */}
+      <FilterSection />
+
+      {/* Main Layout: Left sidebar + Main content */}
+      <div className="container mx-auto px-4 py-6">
         <div className="flex gap-6">
           {/* Left Sidebar - Fixed width */}
           <div className="w-80 flex-shrink-0">
@@ -82,24 +90,24 @@ export default function HomePage(): React.JSX.Element {
 
             {/* No Results Message */}
             {!loading.pharmacies && !error.pharmacies && selectedCity && pharmacies.length === 0 && (
-              <div className="bg-white border border-gray-300 rounded-lg p-8 text-center mb-6">
+              <div className="bg-card border border-border-light rounded-lg p-8 text-center mb-6">
                 <div className="text-4xl mb-4">🔍</div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                <h3 className="text-lg font-semibold text-text-primary mb-2">
                   No pharmacies found
                 </h3>
-                <p className="text-gray-600 mb-6">
+                <p className="text-text-secondary mb-6">
                   Try adjusting your search or filters.
                 </p>
                 <div className="flex gap-4 justify-center">
                   <button
                     onClick={() => dispatch(clearFilters())}
-                    className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-hover transition-colors"
+                    className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-hover transition-colors shadow-md"
                   >
                     Clear Filters
                   </button>
                   <button
                     onClick={handleRetryPharmacies}
-                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 border border-primary text-primary rounded-md hover:bg-primary-lighter transition-colors"
                   >
                     Retry
                   </button>

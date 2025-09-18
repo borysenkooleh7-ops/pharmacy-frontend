@@ -1,20 +1,19 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { setLanguage } from '@/store/uiSlice'
-import { setSelectedCity, setFilters, setSearchTerm } from '@/store/pharmacySlice'
+import { setSelectedCity } from '@/store/pharmacySlice'
 import { useTranslation } from '@/translations'
-import { SearchIcon, FiltersIcon, MenuIcon, ClockIcon, CheckIcon, LocationIcon } from '@/components/ui/Icons'
+import { LocationIcon } from '@/components/ui/Icons'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import type { City, UserLocation } from '@/types'
 
 export default function Header(): React.JSX.Element {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const [showFilters, setShowFilters] = useState<boolean>(false)
   const [geoLocation, setGeoLocation] = useState<UserLocation | null>(null)
   const [loadingLocation, setLoadingLocation] = useState<boolean>(false)
   const { language } = useAppSelector(state => state.ui)
-  const { cities, selectedCity, loading, filters } = useAppSelector(state => state.pharmacy)
+  const { cities, selectedCity, loading } = useAppSelector(state => state.pharmacy)
   const t = useTranslation(language)
 
   const handleLanguageChange = (newLang: 'me' | 'en'): void => {
@@ -29,15 +28,6 @@ export default function Header(): React.JSX.Element {
     }
   }
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    dispatch(setSearchTerm(event.target.value))
-  }
-
-  const handleFilterChange = (filterKey: string, value: boolean | string): void => {
-    dispatch(setFilters({
-      [filterKey]: value
-    }))
-  }
 
   const detectLocation = async () => {
     if (!navigator.geolocation) {
@@ -110,7 +100,7 @@ export default function Header(): React.JSX.Element {
   }
 
   return (
-    <header className="bg-primary shadow-lg border-b border-border-primary">
+    <header className="bg-gradient-to-r from-primary to-secondary shadow-lg border-b border-border-primary">
       <div className="container mx-auto px-6 py-6">
         {/* Top Row - Logo and Controls */}
         <div className="flex flex-col lg:flex-row justify-between items-center gap-6 mb-6">
@@ -176,55 +166,6 @@ export default function Header(): React.JSX.Element {
           </div>
         </div>
 
-        {/* Search Section */}
-        <div className="mb-6">
-          <div className="relative max-w-2xl mx-auto">
-            <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-primary-light" />
-            <input
-              type="text"
-              placeholder={t('searchPlaceholder') || 'Find a pharmacy'}
-              value={filters.search || ''}
-              onChange={handleSearchChange}
-              className="w-full pl-12 pr-4 py-4 border-2 border-white/20 rounded-lg bg-white/10 backdrop-blur text-white text-lg placeholder:text-primary-light focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 transition-all duration-200"
-            />
-          </div>
-        </div>
-
-        {/* Filter Buttons */}
-        <div className="flex flex-wrap justify-center gap-4">
-          <button
-            onClick={() => handleFilterChange('is24h', !filters?.is24h)}
-            className={`px-6 py-3 border-2 rounded-lg font-medium transition-all duration-200 ${
-              filters?.is24h
-                ? 'bg-success text-white border-success shadow-colored-success hover:bg-success-hover'
-                : 'bg-white/20 text-white border-white/30 hover:bg-white/30 hover:border-white/50 backdrop-blur'
-            }`}
-          >
-            24-hour pharmacies
-          </button>
-
-          <button
-            onClick={() => handleFilterChange('openSunday', !filters?.openSunday)}
-            className={`px-6 py-3 border-2 rounded-lg font-medium transition-all duration-200 ${
-              filters?.openSunday
-                ? 'bg-warning text-white border-warning shadow-colored-warning hover:bg-warning-hover'
-                : 'bg-white/20 text-white border-white/30 hover:bg-white/30 hover:border-white/50 backdrop-blur'
-            }`}
-          >
-            Open on Sundays
-          </button>
-
-          <button
-            onClick={() => handleFilterChange('nearby', !filters?.nearby)}
-            className={`px-6 py-3 border-2 rounded-lg font-medium transition-all duration-200 ${
-              filters?.nearby
-                ? 'bg-primary-hover text-white border-primary-hover shadow-colored-primary hover:bg-primary-active'
-                : 'bg-white/20 text-white border-white/30 hover:bg-white/30 hover:border-white/50 backdrop-blur'
-            }`}
-          >
-            Nearby pharmacies
-          </button>
-        </div>
       </div>
     </header>
   )

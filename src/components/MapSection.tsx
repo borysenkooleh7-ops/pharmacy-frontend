@@ -15,8 +15,8 @@ export default function MapSection(): React.JSX.Element {
   }
 
   return (
-    <div className="bg-bg-base border border-border-default rounded-xl shadow-card">
-      <div className="p-6 border-b border-border-light bg-bg-light">
+    <div className="bg-card border border-border rounded-xl shadow-lg">
+      <div className="p-6 border-b border-border-light bg-background-secondary">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-primary bg-opacity-10 rounded-xl">
@@ -41,7 +41,7 @@ export default function MapSection(): React.JSX.Element {
         </div>
       </div>
 
-      <div className={`transition-all duration-300 ${mapExpanded ? 'h-96' : 'h-64'} bg-bg-light flex items-center justify-center rounded-b-xl overflow-hidden`}>
+      <div className={`transition-all duration-300 ${mapExpanded ? 'h-96' : 'h-64'} bg-background-secondary flex items-center justify-center rounded-b-xl overflow-hidden`}>
         <GoogleMap />
       </div>
     </div>

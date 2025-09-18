@@ -8,115 +8,115 @@ export default defineConfig({
   theme: {
     extend: {
       colors: {
-        // Vibrant Electric Color System
+        // Vibrant but Readable Primary Color
         primary: {
-          DEFAULT: '#00FFFF', // Electric Cyan
-          hover: '#00E6E6',
-          active: '#00CCCC',
-          light: '#80FFFF',
-          lighter: '#E6FFFF',
-          dark: '#00B3B3',
+          DEFAULT: '#3B82F6', // Blue
+          hover: '#2563EB',
+          active: '#1D4ED8',
+          light: '#93C5FD',
+          lighter: '#DBEAFE',
+          dark: '#1E40AF',
         },
 
-        // Neon Secondary Colors
+        // Vibrant Secondary Colors
         secondary: {
-          DEFAULT: '#FF1493', // Deep Pink
-          light: '#FF69B4',
-          dark: '#DC143C',
+          DEFAULT: '#EC4899', // Pink
+          light: '#F9A8D4',
+          dark: '#BE185D',
         },
 
-        // Vibrant Status Colors
+        // Readable Status Colors
         success: {
-          DEFAULT: '#00FF00', // Lime Green
-          hover: '#00E600',
-          light: '#80FF80',
-          dark: '#00CC00',
+          DEFAULT: '#10B981', // Emerald Green
+          hover: '#059669',
+          light: '#A7F3D0',
+          dark: '#047857',
         },
 
         warning: {
-          DEFAULT: '#FF8C00', // Dark Orange
-          hover: '#FF7F00',
-          light: '#FFB347',
-          dark: '#FF6100',
+          DEFAULT: '#F59E0B', // Amber
+          hover: '#D97706',
+          light: '#FDE68A',
+          dark: '#B45309',
         },
 
         danger: {
-          DEFAULT: '#FF0080', // Electric Pink
-          hover: '#E6006B',
-          light: '#FF80BF',
-          dark: '#CC0066',
+          DEFAULT: '#EF4444', // Red
+          hover: '#DC2626',
+          light: '#FCA5A5',
+          dark: '#B91C1C',
         },
 
-        // Vibrant Light Background Palette
+        // Clean Light Background Palette
         background: {
           DEFAULT: '#FFFFFF', // Pure White
-          secondary: '#F0F8FF', // Alice Blue
-          tertiary: '#E6F3FF', // Light Blue
-          accent: '#FFE4E1', // Misty Rose
-          dark: '#F5F5DC', // Beige
+          secondary: '#F8FAFC', // Very Light Gray
+          tertiary: '#F1F5F9', // Light Gray
+          accent: '#FEF2F2', // Very Light Red
+          dark: '#E2E8F0', // Light Blue Gray
         },
 
-        // Neon Border System
+        // Clean Border System
         border: {
-          DEFAULT: '#00FFFF',
-          light: '#80FFFF',
-          medium: '#FF1493',
-          dark: '#8A2BE2',
-          primary: '#00FFFF',
-          success: '#00FF00',
-          warning: '#FF8C00',
-          danger: '#FF0080',
+          DEFAULT: '#E2E8F0',
+          light: '#F1F5F9',
+          medium: '#94A3B8',
+          dark: '#475569',
+          primary: '#3B82F6',
+          success: '#10B981',
+          warning: '#F59E0B',
+          danger: '#EF4444',
         },
 
-        // Vibrant Light Text Hierarchy
+        // Clean Readable Text Hierarchy
         text: {
-          primary: '#1A1A1A', // Dark text for readability
-          secondary: '#0066CC', // Deep Blue
-          tertiary: '#CC0066', // Deep Pink
-          accent: '#008000', // Dark Green
-          white: '#ffffff',
-          success: '#006600', // Dark Green
-          warning: '#CC6600', // Dark Orange
-          danger: '#CC0044', // Dark Red
+          primary: '#1F2937', // Dark Gray
+          secondary: '#6B7280', // Medium Gray
+          tertiary: '#9CA3AF', // Light Gray
+          accent: '#3B82F6', // Blue
+          white: '#FFFFFF',
+          success: '#059669', // Green
+          warning: '#D97706', // Orange
+          danger: '#DC2626', // Red
         },
 
-        // Electric Interactive Elements
+        // Clean Interactive Elements
         interactive: {
-          primary: '#00FFFF',
-          'primary-hover': '#00E6E6',
-          secondary: '#FF1493',
-          'secondary-hover': '#DC143C',
-          success: '#00FF00',
-          'success-hover': '#00E600',
-          warning: '#FF8C00',
-          'warning-hover': '#FF7F00',
-          danger: '#FF0080',
-          'danger-hover': '#E6006B',
+          primary: '#3B82F6',
+          'primary-hover': '#2563EB',
+          secondary: '#EC4899',
+          'secondary-hover': '#BE185D',
+          success: '#10B981',
+          'success-hover': '#059669',
+          warning: '#F59E0B',
+          'warning-hover': '#D97706',
+          danger: '#EF4444',
+          'danger-hover': '#DC2626',
         },
 
-        // Vibrant Light Card Backgrounds
+        // Clean Card Backgrounds
         card: {
           DEFAULT: '#FFFFFF',
-          secondary: '#F0F8FF',
-          accent: '#FFE4E1',
-          hover: '#E6F3FF',
+          secondary: '#F8FAFC',
+          accent: '#FEF2F2',
+          hover: '#F1F5F9',
         },
       },
 
-      // Vibrant Neon Box Shadows
+      // Clean Professional Box Shadows
       boxShadow: {
-        'sm': '0 0 5px rgba(0, 255, 255, 0.3)',
-        'DEFAULT': '0 0 10px rgba(0, 255, 255, 0.5), 0 0 20px rgba(255, 20, 147, 0.3)',
-        'md': '0 0 15px rgba(0, 255, 255, 0.6), 0 0 30px rgba(255, 20, 147, 0.4)',
-        'lg': '0 0 25px rgba(0, 255, 255, 0.7), 0 0 50px rgba(255, 20, 147, 0.5)',
-        'xl': '0 0 35px rgba(0, 255, 255, 0.8), 0 0 70px rgba(255, 20, 147, 0.6)',
-        'colored-primary': '0 0 20px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.4)',
-        'colored-success': '0 0 20px rgba(0, 255, 0, 0.8), 0 0 40px rgba(0, 255, 0, 0.4)',
-        'colored-warning': '0 0 20px rgba(255, 140, 0, 0.8), 0 0 40px rgba(255, 140, 0, 0.4)',
-        'colored-danger': '0 0 20px rgba(255, 0, 128, 0.8), 0 0 40px rgba(255, 0, 128, 0.4)',
-        'hover': '0 0 30px rgba(0, 255, 255, 0.9), 0 0 60px rgba(255, 20, 147, 0.7)',
-        'button': '0 0 15px rgba(0, 255, 255, 0.6)',
-        'button-hover': '0 0 25px rgba(0, 255, 255, 0.8), 0 0 50px rgba(0, 255, 255, 0.4)',
+        'sm': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+        'DEFAULT': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+        'md': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        'lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        'xl': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+        'colored-primary': '0 4px 14px 0 rgba(59, 130, 246, 0.15)',
+        'colored-success': '0 4px 14px 0 rgba(16, 185, 129, 0.15)',
+        'colored-warning': '0 4px 14px 0 rgba(245, 158, 11, 0.15)',
+        'colored-danger': '0 4px 14px 0 rgba(239, 68, 68, 0.15)',
+        'hover': '0 8px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 10px -5px rgba(0, 0, 0, 0.04)',
+        'button': '0 2px 4px -1px rgba(59, 130, 246, 0.2)',
+        'button-hover': '0 4px 8px -2px rgba(59, 130, 246, 0.25)',
       },
 
       // Enhanced Border Radius

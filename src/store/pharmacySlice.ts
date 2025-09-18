@@ -24,7 +24,6 @@ interface PharmacyState {
   medicines: Medicine[]
   selectedPharmacy: Pharmacy | null
   selectedCity: City | null
-  userLocation: UserLocation | null
   searchType: SearchType
   filters: PharmacyFilters
   loading: {
@@ -153,7 +152,6 @@ const initialState: PharmacyState = {
   medicines: [],
   selectedPharmacy: null,
   selectedCity: null,
-  userLocation: null,
   searchType: 'pharmacy',
   filters: {
     is24h: false,

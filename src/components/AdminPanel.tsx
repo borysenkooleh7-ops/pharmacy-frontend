@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAppSelector } from '../hooks/redux'
+import { apiService } from '../services/api'
 
 interface Submission {
   id: string
@@ -35,20 +36,11 @@ export default function AdminPanel(): React.JSX.Element {
   const fetchSubmissions = async (): Promise<void> => {
     setLoading(true)
     try {
-      const response = await fetch('/api/admin/submissions', {
-        headers: {
-          'x-admin-key': adminKey
-        }
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setSubmissions(data)
-      } else {
-        setMessage('Failed to fetch submissions')
-      }
+      const data = await apiService.getSubmissions(adminKey)
+      setSubmissions(data)
+      setMessage('')
     } catch (error) {
-      setMessage('Error fetching submissions')
+      setMessage('Failed to fetch submissions')
     } finally {
       setLoading(false)
     }
@@ -56,23 +48,11 @@ export default function AdminPanel(): React.JSX.Element {
 
   const updateSubmissionStatus = async (id: string, status: string): Promise<void> => {
     try {
-      const response = await fetch(`/api/admin/submissions/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-key': adminKey
-        },
-        body: JSON.stringify({ status })
-      })
-
-      if (response.ok) {
-        setMessage(`Submission ${status} successfully`)
-        fetchSubmissions()
-      } else {
-        setMessage(`Failed to update submission`)
-      }
+      await apiService.updateSubmissionStatus(id, status, adminKey)
+      setMessage(`Submission ${status} successfully`)
+      fetchSubmissions()
     } catch (error) {
-      setMessage('Error updating submission')
+      setMessage('Failed to update submission')
     }
   }
 
@@ -98,7 +78,7 @@ export default function AdminPanel(): React.JSX.Element {
               value={adminKey}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAdminKey(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-              onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && authenticate()}
+              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && authenticate()}
             />
           </div>
 
