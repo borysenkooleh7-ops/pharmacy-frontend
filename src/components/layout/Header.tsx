@@ -110,31 +110,31 @@ export default function Header(): React.JSX.Element {
   }
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
-      <div className="container mx-auto px-4 py-6">
+    <header className="bg-primary shadow-lg border-b border-border-primary">
+      <div className="container mx-auto px-6 py-6">
         {/* Top Row - Logo and Controls */}
-        <div className="flex flex-col lg:flex-row justify-between items-center gap-4 mb-6">
+        <div className="flex flex-col lg:flex-row justify-between items-center gap-6 mb-6">
           <div className="flex flex-col lg:flex-row items-center gap-6">
             <Link to="/" className="text-center lg:text-left">
-              <h1 className="text-2xl lg:text-3xl font-bold text-primary">
+              <h1 className="text-3xl lg:text-4xl font-bold text-white">
                 Apoteka24.me
               </h1>
-              <p className="text-sm lg:text-base text-text-secondary">{t('slogan')}</p>
+              <p className="text-lg text-primary-light">{t('slogan')}</p>
             </Link>
           </div>
 
           <div className="flex items-center gap-4">
             {/* City Selector with Location Detection */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <select
                 value={selectedCity?.id || ''}
                 onChange={handleCityChange}
                 disabled={loading.cities}
-                className="px-3 py-2 border border-gray-300 rounded-md bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50"
+                className="px-4 py-3 border-2 border-white/20 rounded-lg bg-white/10 backdrop-blur text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 disabled:opacity-50 transition-all duration-200"
               >
-                <option value="">{loading.cities ? 'Loading...' : t('selectCity')}</option>
+                <option value="" className="text-text-primary">{loading.cities ? 'Loading...' : t('selectCity')}</option>
                 {cities.map(city => (
-                  <option key={city.id} value={city.id}>
+                  <option key={city.id} value={city.id} className="text-text-primary">
                     {language === 'me' ? city.name_me : (city.name_en || city.name_me)}
                   </option>
                 ))}
@@ -143,27 +143,31 @@ export default function Header(): React.JSX.Element {
               <button
                 onClick={detectLocation}
                 disabled={loadingLocation || loading.cities}
-                className="p-2 bg-primary hover:bg-primary-hover text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-3 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur border border-white/20 hover:border-white/40 shadow-button hover:shadow-button-hover"
                 title={t('detectLocation') || 'Detect my location'}
               >
-                <LocationIcon className={`w-4 h-4 ${loadingLocation ? 'animate-spin' : ''}`} />
+                <LocationIcon className={`w-5 h-5 ${loadingLocation ? 'animate-spin' : ''}`} />
               </button>
             </div>
 
             {/* Language Switcher */}
-            <div className="flex border border-gray-300 rounded-md overflow-hidden">
+            <div className="flex bg-white/20 backdrop-blur rounded-lg overflow-hidden border border-white/20">
               <button
                 onClick={() => handleLanguageChange('me')}
-                className={`px-3 py-2 text-sm font-medium transition-colors ${
-                  language === 'me' ? 'bg-primary text-white' : 'bg-white text-text-primary hover:bg-gray-50'
+                className={`px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                  language === 'me'
+                    ? 'bg-white text-primary shadow-sm'
+                    : 'text-white hover:bg-white/20'
                 }`}
               >
                 ME
               </button>
               <button
                 onClick={() => handleLanguageChange('en')}
-                className={`px-3 py-2 text-sm font-medium transition-colors ${
-                  language === 'en' ? 'bg-primary text-white' : 'bg-white text-text-primary hover:bg-gray-50'
+                className={`px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                  language === 'en'
+                    ? 'bg-white text-primary shadow-sm'
+                    : 'text-white hover:bg-white/20'
                 }`}
               >
                 EN
@@ -173,27 +177,27 @@ export default function Header(): React.JSX.Element {
         </div>
 
         {/* Search Section */}
-        <div className="mb-4">
-          <div className="relative max-w-2xl">
-            <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <div className="mb-6">
+          <div className="relative max-w-2xl mx-auto">
+            <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-primary-light" />
             <input
               type="text"
               placeholder={t('searchPlaceholder') || 'Find a pharmacy'}
               value={filters.search || ''}
               onChange={handleSearchChange}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder-gray-500"
+              className="w-full pl-12 pr-4 py-4 border-2 border-white/20 rounded-lg bg-white/10 backdrop-blur text-white text-lg placeholder:text-primary-light focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 transition-all duration-200"
             />
           </div>
         </div>
 
         {/* Filter Buttons */}
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap justify-center gap-4">
           <button
             onClick={() => handleFilterChange('is24h', !filters?.is24h)}
-            className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors ${
+            className={`px-6 py-3 border-2 rounded-lg font-medium transition-all duration-200 ${
               filters?.is24h
-                ? 'bg-primary text-white border-primary'
-                : 'bg-white text-text-primary border-gray-300 hover:bg-gray-50'
+                ? 'bg-success text-white border-success shadow-colored-success hover:bg-success-hover'
+                : 'bg-white/20 text-white border-white/30 hover:bg-white/30 hover:border-white/50 backdrop-blur'
             }`}
           >
             24-hour pharmacies
@@ -201,10 +205,10 @@ export default function Header(): React.JSX.Element {
 
           <button
             onClick={() => handleFilterChange('openSunday', !filters?.openSunday)}
-            className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors ${
+            className={`px-6 py-3 border-2 rounded-lg font-medium transition-all duration-200 ${
               filters?.openSunday
-                ? 'bg-primary text-white border-primary'
-                : 'bg-white text-text-primary border-gray-300 hover:bg-gray-50'
+                ? 'bg-warning text-white border-warning shadow-colored-warning hover:bg-warning-hover'
+                : 'bg-white/20 text-white border-white/30 hover:bg-white/30 hover:border-white/50 backdrop-blur'
             }`}
           >
             Open on Sundays
@@ -212,10 +216,10 @@ export default function Header(): React.JSX.Element {
 
           <button
             onClick={() => handleFilterChange('nearby', !filters?.nearby)}
-            className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors ${
+            className={`px-6 py-3 border-2 rounded-lg font-medium transition-all duration-200 ${
               filters?.nearby
-                ? 'bg-primary text-white border-primary'
-                : 'bg-white text-text-primary border-gray-300 hover:bg-gray-50'
+                ? 'bg-primary-hover text-white border-primary-hover shadow-colored-primary hover:bg-primary-active'
+                : 'bg-white/20 text-white border-white/30 hover:bg-white/30 hover:border-white/50 backdrop-blur'
             }`}
           >
             Nearby pharmacies

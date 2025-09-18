@@ -83,19 +83,19 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border-b border-gray-100 p-8">
+    <div className="bg-bg-base border border-border-default rounded-xl shadow-card">
+      <div className="p-8 border-b border-border-light bg-bg-light">
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+          <div className="p-3 bg-primary bg-opacity-10 rounded-lg">
             <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+            <h2 className="text-2xl font-bold text-text-primary mb-3">
               {t('submitPharmacy') || 'Add New Pharmacy'}
             </h2>
-            <p className="text-gray-600 text-lg leading-relaxed">
+            <p className="text-text-secondary leading-relaxed">
               {t('submitPharmacySubtitle') || 'Help us expand our pharmacy network in Montenegro. Your contribution makes a difference!'}
             </p>
           </div>
@@ -106,17 +106,15 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
 
         {/* Success Message */}
         {submissionSuccess && (
-          <div className="p-6 rounded-xl mb-8 bg-emerald-50 border border-emerald-200">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-emerald-500 text-white rounded-full flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
+          <div className="p-6 mb-8 bg-success bg-opacity-10 border border-success border-opacity-20 rounded-xl">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-success text-white rounded-full flex items-center justify-center text-lg">
+                ✓
               </div>
               <div>
-                <h3 className="font-bold text-emerald-900 text-lg mb-1">{t('success') || 'Successfully Submitted!'}</h3>
-                <p className="text-emerald-800">
-                  {language === 'me' ? 'Hvala! Vaš zahtjev je uspješno poslat i bit će razmojen u najkraćem mogućem roku.' : 'Thank you! Your pharmacy submission has been received and will be reviewed shortly.'}
+                <h3 className="font-semibold text-success text-lg">{t('success') || 'Success!'}</h3>
+                <p className="text-sm text-success opacity-90">
+                  {language === 'me' ? 'Hvala! Vaš zahtjev je uspješno poslat.' : 'Thank you! Your request has been submitted successfully.'}
                 </p>
               </div>
             </div>
@@ -134,9 +132,9 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label htmlFor="name" className="block text-sm font-semibold text-gray-900">
-                {t('pharmacyName')} <span className="text-red-500">*</span>
+            <div>
+              <label htmlFor="name" className="block text-sm font-semibold text-text-primary mb-3">
+                {t('pharmacyName')} <span className="text-danger">*</span>
               </label>
               <input
                 type="text"
@@ -145,14 +143,14 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                placeholder="Enter pharmacy name..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-white hover:border-gray-400"
+                placeholder="Enter pharmacy name"
+                className="w-full px-4 py-4 border border-border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-bg-base text-text-primary placeholder:text-text-placeholder"
               />
             </div>
 
-            <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-900">
-                {t('pharmacyEmail')} <span className="text-red-500">*</span>
+            <div>
+              <label htmlFor="email" className="block text-sm font-semibold text-text-primary mb-3">
+                {t('pharmacyEmail')} <span className="text-danger">*</span>
               </label>
               <input
                 type="email"
@@ -162,14 +160,14 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
                 onChange={handleChange}
                 required
                 placeholder="contact@pharmacy.com"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-white hover:border-gray-400"
+                className="w-full px-4 py-4 border border-border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-bg-base text-text-primary placeholder:text-text-placeholder"
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="address" className="block text-sm font-semibold text-gray-900">
-              {t('pharmacyAddress')} <span className="text-red-500">*</span>
+          <div>
+            <label htmlFor="address" className="block text-sm font-semibold text-text-primary mb-3">
+              {t('pharmacyAddress')} <span className="text-danger">*</span>
             </label>
             <input
               type="text"
@@ -178,15 +176,15 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
               value={formData.address}
               onChange={handleChange}
               required
-              placeholder="Enter full pharmacy address..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-white hover:border-gray-400"
+              placeholder="Enter complete address"
+              className="w-full px-4 py-4 border border-border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-bg-base text-text-primary placeholder:text-text-placeholder"
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label htmlFor="city_slug" className="block text-sm font-semibold text-gray-900">
-                City <span className="text-red-500">*</span>
+            <div>
+              <label htmlFor="city_slug" className="block text-sm font-semibold text-text-primary mb-3">
+                City <span className="text-danger">*</span>
               </label>
               <select
                 id="city_slug"
@@ -194,9 +192,9 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
                 value={formData.city_slug}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-white hover:border-gray-400"
+                className="w-full px-4 py-4 border border-border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-bg-base text-text-primary"
               >
-                <option value="">Select city...</option>
+                <option value="">Select city</option>
                 {cities.map(city => (
                   <option key={city.slug} value={city.slug}>
                     {language === 'me' ? city.name_me : city.name_en}
@@ -205,8 +203,8 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
               </select>
             </div>
 
-            <div className="space-y-2">
-              <label htmlFor="phone" className="block text-sm font-semibold text-gray-900">
+            <div>
+              <label htmlFor="phone" className="block text-sm font-semibold text-text-primary mb-3">
                 {t('pharmacyPhone')}
               </label>
               <input
@@ -216,13 +214,13 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="+382 XX XXX XXX"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-white hover:border-gray-400"
+                className="w-full px-4 py-4 border border-border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-bg-base text-text-primary placeholder:text-text-placeholder"
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="website" className="block text-sm font-semibold text-gray-900">
+          <div>
+            <label htmlFor="website" className="block text-sm font-semibold text-text-primary mb-3">
               {t('pharmacyWebsite')}
             </label>
             <input
@@ -232,45 +230,45 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
               value={formData.website}
               onChange={handleChange}
               placeholder="https://example-pharmacy.com"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-white hover:border-gray-400"
+              className="w-full px-4 py-4 border border-border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-bg-base text-text-primary placeholder:text-text-placeholder"
             />
           </div>
 
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-gray-900">Operating Hours</h4>
+          <div>
+            <label className="block text-sm font-semibold text-text-primary mb-4">Operating Hours</label>
             <div className="flex flex-col sm:flex-row gap-4">
-              <label className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+              <label className="flex items-center p-5 border border-border-default rounded-lg cursor-pointer hover:bg-bg-hover transition-all duration-200">
                 <input
                   type="checkbox"
                   name="is_24h"
                   checked={formData.is_24h}
                   onChange={handleChange}
-                  className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                  className="w-5 h-5 text-primary bg-bg-base border-border-default rounded focus:ring-primary"
                 />
-                <div className="ml-3">
-                  <span className="text-sm font-medium text-gray-900">{t('is24hours') || '24/7 Operation'}</span>
-                  <p className="text-xs text-gray-500">Open 24 hours, 7 days a week</p>
+                <div className="ml-4">
+                  <span className="text-sm font-medium text-text-primary">{t('is24hours') || '24/7 Operation'}</span>
+                  <p className="text-xs text-text-secondary mt-1">Open 24 hours, 7 days a week</p>
                 </div>
               </label>
 
-              <label className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+              <label className="flex items-center p-5 border border-border-default rounded-lg cursor-pointer hover:bg-bg-hover transition-all duration-200">
                 <input
                   type="checkbox"
                   name="open_sunday"
                   checked={formData.open_sunday}
                   onChange={handleChange}
-                  className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                  className="w-5 h-5 text-primary bg-bg-base border-border-default rounded focus:ring-primary"
                 />
-                <div className="ml-3">
-                  <span className="text-sm font-medium text-gray-900">{t('openOnSunday') || 'Open on Sundays'}</span>
-                  <p className="text-xs text-gray-500">Available on Sunday</p>
+                <div className="ml-4">
+                  <span className="text-sm font-medium text-text-primary">{t('openOnSunday') || 'Open on Sundays'}</span>
+                  <p className="text-xs text-text-secondary mt-1">Available on Sunday</p>
                 </div>
               </label>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="notes" className="block text-sm font-semibold text-gray-900">
+          <div>
+            <label htmlFor="notes" className="block text-sm font-semibold text-text-primary mb-3">
               {t('additionalNotes') || 'Additional Information'}
             </label>
             <textarea
@@ -279,16 +277,16 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
               value={formData.notes}
               onChange={handleChange}
               rows={4}
-              placeholder="Any additional information about the pharmacy, special services, or operating hours..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-white hover:border-gray-400 resize-none"
+              placeholder="Any additional information about the pharmacy..."
+              className="w-full px-4 py-4 border border-border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-bg-base text-text-primary placeholder:text-text-placeholder resize-none"
             />
           </div>
 
-          <div className="pt-6 border-t border-gray-200">
+          <div className="pt-6 border-t border-border-light">
             <button
               type="submit"
               disabled={loading.submission}
-              className="w-full sm:w-auto px-8 py-4 bg-primary hover:bg-primary-hover text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
+              className="w-full sm:w-auto px-8 py-4 bg-primary hover:bg-primary-hover text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-[1.02]"
             >
               {loading.submission ? (
                 <span className="flex items-center justify-center">
@@ -296,7 +294,7 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
                   {language === 'me' ? 'Submitting...' : 'Submitting...'}
                 </span>
               ) : (
-                <span className="flex items-center justify-center gap-3">
+                <span className="flex items-center justify-center gap-2">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>

@@ -44,75 +44,68 @@ export default function HomePage(): React.JSX.Element {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-background-tertiary">
+      <div className="container mx-auto px-4 py-6">
         {/* Error Message */}
         {error.pharmacies && (
           <ErrorMessage
             error={error.pharmacies}
             onRetry={handleRetryPharmacies}
-            className="mb-8"
+            className="mb-6"
           />
         )}
 
-        {/* Main Content Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Left Sidebar */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Advertisement Banner */}
-            <div className="sticky top-4">
+        {/* Simple Layout: Left sidebar + Main content */}
+        <div className="flex gap-6">
+          {/* Left Sidebar - Fixed width */}
+          <div className="w-80 flex-shrink-0">
+            {/* Ad block at top */}
+            <div className="mb-6">
               <AdvertisingBanner />
             </div>
 
-            {/* Pharmacy List */}
-            <div className="hidden lg:block">
-              <PharmacyList />
-            </div>
+            {/* Pharmacy list below ad */}
+            <PharmacyList />
           </div>
 
           {/* Main Content Area */}
-          <div className="lg:col-span-3 space-y-8">
+          <div className="flex-1">
             {/* Map Section */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="mb-6">
               <MapSection />
             </div>
 
-            {/* Mobile Pharmacy List */}
-            <div className="lg:hidden">
-              <PharmacyList />
+            {/* Benefits Section */}
+            <div className="mb-6">
+              <BenefitsSection />
             </div>
 
             {/* No Results Message */}
             {!loading.pharmacies && !error.pharmacies && selectedCity && pharmacies.length === 0 && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-                <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
-                  <span className="text-4xl text-gray-400">🔍</span>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">
+              <div className="bg-white border border-gray-300 rounded-lg p-8 text-center mb-6">
+                <div className="text-4xl mb-4">🔍</div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
                   No pharmacies found
                 </h3>
-                <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                  We couldn't find any pharmacies matching your criteria. Try adjusting your search or filters.
+                <p className="text-gray-600 mb-6">
+                  Try adjusting your search or filters.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex gap-4 justify-center">
                   <button
                     onClick={() => dispatch(clearFilters())}
-                    className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover transition-all duration-200 font-medium shadow-sm hover:shadow-md"
+                    className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-hover transition-colors"
                   >
                     Clear Filters
                   </button>
                   <button
                     onClick={handleRetryPharmacies}
-                    className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium"
+                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
                   >
-                    Retry Search
+                    Retry
                   </button>
                 </div>
               </div>
             )}
-
-            {/* Benefits Section */}
-            <BenefitsSection />
 
             {/* Pharmacy Submission Form */}
             <PharmacySubmissionForm />

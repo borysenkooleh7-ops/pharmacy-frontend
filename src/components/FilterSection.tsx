@@ -78,14 +78,14 @@ export default function FilterSection(): React.JSX.Element {
   const activeFiltersCount = Object.values(filters).filter(value => value === true || (typeof value === 'string' && value.length > 0)).length
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+    <div className="bg-card shadow-xl border border-primary rounded-xl p-6 mb-6 pulse-neon rainbow-border">
       <div className="flex flex-wrap gap-3 items-center">
         <button
           onClick={() => handleFilterToggle('is24h')}
-          className={`px-4 py-2 rounded-full border transition-colors ${
+          className={`px-5 py-3 rounded-lg border-2 font-medium transition-all duration-200 neon-text ${
             filters.is24h
-              ? 'bg-primary text-white border-primary'
-              : 'bg-white text-text-primary border-border hover:border-primary hover:text-primary'
+              ? 'bg-success text-white border-success shadow-colored-success hover:bg-success-hover hover:shadow-hover pulse-neon'
+              : 'bg-background text-text-primary border-border hover:border-success hover:text-success hover:bg-success-light shadow-sm hover:shadow-md hover:neon-text'
           }`}
         >
           {t('filter24h')}
@@ -93,10 +93,10 @@ export default function FilterSection(): React.JSX.Element {
 
         <button
           onClick={() => handleFilterToggle('openSunday')}
-          className={`px-4 py-2 rounded-full border transition-colors ${
+          className={`px-5 py-3 rounded-lg border-2 font-medium transition-all duration-200 neon-text ${
             filters.openSunday
-              ? 'bg-primary text-white border-primary'
-              : 'bg-white text-text-primary border-border hover:border-primary hover:text-primary'
+              ? 'bg-warning text-white border-warning shadow-colored-warning hover:bg-warning-hover hover:shadow-hover pulse-neon'
+              : 'bg-background text-text-primary border-border hover:border-warning hover:text-warning hover:bg-warning-light shadow-sm hover:shadow-md hover:neon-text'
           }`}
         >
           {t('filterSunday')}
@@ -105,14 +105,14 @@ export default function FilterSection(): React.JSX.Element {
         <button
           onClick={() => handleFilterToggle('nearby')}
           disabled={isLoadingLocation}
-          className={`px-4 py-2 rounded-full border transition-colors flex items-center gap-2 ${
+          className={`px-5 py-3 rounded-lg border-2 font-medium transition-all duration-200 flex items-center gap-2 neon-text ${
             filters.nearby
-              ? 'bg-primary text-white border-primary'
-              : 'bg-white text-text-primary border-border hover:border-primary hover:text-primary'
+              ? 'bg-primary text-white border-primary shadow-colored-primary hover:bg-primary-hover hover:shadow-hover pulse-neon'
+              : 'bg-background text-text-primary border-border hover:border-primary hover:text-primary hover:bg-primary-lighter shadow-sm hover:shadow-md hover:neon-text'
           } ${isLoadingLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           {isLoadingLocation && (
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current pulse-neon"></div>
           )}
           {t('filterNearby')}
         </button>
@@ -120,7 +120,7 @@ export default function FilterSection(): React.JSX.Element {
         {activeFiltersCount > 0 && (
           <button
             onClick={handleClearFilters}
-            className="px-4 py-2 rounded-full border border-danger text-danger hover:bg-danger hover:text-white transition-colors ml-2"
+            className="px-5 py-3 rounded-lg border-2 border-danger text-danger hover:bg-danger hover:text-white transition-all duration-200 ml-2 font-medium shadow-sm hover:shadow-colored-danger neon-text pulse-neon"
           >
             {t('clearFilters')} ({activeFiltersCount})
           </button>
