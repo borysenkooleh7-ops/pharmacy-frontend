@@ -18,7 +18,7 @@ export default function GoogleMap(): React.JSX.Element {
   const dispatch = useAppDispatch()
 
   const { pharmacies, selectedCity, selectedPharmacy } = useAppSelector(state => state.pharmacy)
-  const { mapExpanded, language } = useAppSelector(state => state.ui)
+  const { language } = useAppSelector(state => state.ui)
 
   // Default coordinates for Podgorica
   const defaultCenter = { lat: 42.4415, lng: 19.2621 }
@@ -249,7 +249,7 @@ export default function GoogleMap(): React.JSX.Element {
 
   if (!GOOGLE_MAPS_API_KEY) {
     return (
-      <div className={`w-full ${mapExpanded ? 'h-96 md:h-[500px]' : 'h-64 md:h-80'} bg-gray-100 transition-all duration-300 rounded-lg flex items-center justify-center`}>
+      <div className="w-full h-[700px] bg-gray-100 transition-all duration-300 rounded-lg flex items-center justify-center">
         <div className="text-center text-text-secondary">
           <div className="text-4xl mb-2">🗺️</div>
           <p>Google Maps API key not configured</p>
@@ -262,8 +262,7 @@ export default function GoogleMap(): React.JSX.Element {
   return (
     <div
       ref={mapRef}
-      className={`w-full ${mapExpanded ? 'h-96 md:h-[500px]' : 'h-64 md:h-80'} bg-gray-100 transition-all duration-300 rounded-lg`}
-      style={{ minHeight: '200px' }}
+      className="w-full h-[700px] bg-gray-100 transition-all duration-300 rounded-lg"
     />
   )
 }

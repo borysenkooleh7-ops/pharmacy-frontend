@@ -25,7 +25,7 @@ export default function BenefitsSection(): React.JSX.Element {
   ]
 
   return (
-    <div className="bg-card border border-border-light rounded-xl shadow-lg p-10">
+    <div className="bg-card border border-primary-light rounded-xl shadow-lg p-10 hover:border-primary hover:shadow-xl transition-all duration-300">
       <div className="text-center mb-12">
         <h2 className="text-3xl font-bold text-text-primary mb-4">
           {t('benefitsTitle') || 'Why Choose Apoteka24.me?'}

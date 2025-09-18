@@ -100,7 +100,7 @@ export default function Header(): React.JSX.Element {
   }
 
   return (
-    <header className="bg-gradient-to-r from-primary to-secondary shadow-lg border-b border-border-primary">
+    <header className="bg-gradient-to-r from-primary to-secondary shadow-lg border-b border-gray-200">
       <div className="container mx-auto px-6 py-6">
         {/* Top Row - Logo and Controls */}
         <div className="flex flex-col lg:flex-row justify-between items-center gap-6 mb-6">
@@ -133,7 +133,7 @@ export default function Header(): React.JSX.Element {
               <button
                 onClick={detectLocation}
                 disabled={loadingLocation || loading.cities}
-                className="p-3 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur border border-white/20 hover:border-white/40 shadow-button hover:shadow-button-hover"
+                className="p-3 bg-white/20 hover:bg-white/30 active:bg-white/40 text-white rounded-lg transition-all duration-200 transform disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur border border-white/20 hover:border-white/40 shadow-button hover:shadow-button-hover hover:scale-105 active:scale-95"
                 title={t('detectLocation') || 'Detect my location'}
               >
                 <LocationIcon className={`w-5 h-5 ${loadingLocation ? 'animate-spin' : ''}`} />
@@ -144,20 +144,20 @@ export default function Header(): React.JSX.Element {
             <div className="flex bg-white/20 backdrop-blur rounded-lg overflow-hidden border border-white/20">
               <button
                 onClick={() => handleLanguageChange('me')}
-                className={`px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                className={`px-4 py-3 text-sm font-medium transition-all duration-200 transform ${
                   language === 'me'
-                    ? 'bg-white text-primary shadow-sm'
-                    : 'text-white hover:bg-white/20'
+                    ? 'bg-white text-primary shadow-sm ring-2 ring-white ring-opacity-50'
+                    : 'text-white hover:bg-white/20 active:bg-white/30 hover:scale-105 active:scale-95'
                 }`}
               >
                 ME
               </button>
               <button
                 onClick={() => handleLanguageChange('en')}
-                className={`px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                className={`px-4 py-3 text-sm font-medium transition-all duration-200 transform ${
                   language === 'en'
-                    ? 'bg-white text-primary shadow-sm'
-                    : 'text-white hover:bg-white/20'
+                    ? 'bg-white text-primary shadow-sm ring-2 ring-white ring-opacity-50'
+                    : 'text-white hover:bg-white/20 active:bg-white/30 hover:scale-105 active:scale-95'
                 }`}
               >
                 EN

@@ -84,7 +84,7 @@ export default function AdminPanel(): React.JSX.Element {
 
           <button
             onClick={authenticate}
-            className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-hover transition-colors"
+            className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-hover active:bg-primary-active transition-all duration-200 transform hover:scale-105 active:scale-95 hover:shadow-md"
           >
             Login
           </button>
@@ -101,7 +101,7 @@ export default function AdminPanel(): React.JSX.Element {
             <h1 className="text-2xl font-bold">Admin Panel - Pharmacy Submissions</h1>
             <button
               onClick={() => setIsAuthenticated(false)}
-              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
+              className="bg-danger text-white px-4 py-2 rounded-md hover:bg-danger-hover active:bg-danger-dark transition-all duration-200 transform hover:scale-105 active:scale-95 hover:shadow-md"
             >
               Logout
             </button>
@@ -122,7 +122,7 @@ export default function AdminPanel(): React.JSX.Element {
               <h2 className="text-lg font-semibold">Pharmacy Submissions ({submissions.length})</h2>
               <button
                 onClick={fetchSubmissions}
-                className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-hover transition-colors"
+                className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-hover active:bg-primary-active transition-all duration-200 transform hover:scale-105 active:scale-95 hover:shadow-md"
               >
                 Refresh
               </button>
@@ -223,13 +223,13 @@ export default function AdminPanel(): React.JSX.Element {
                           <div className="flex gap-2">
                             <button
                               onClick={() => updateSubmissionStatus(submission.id, 'approved')}
-                              className="text-green-600 hover:text-green-900"
+                              className="text-success hover:text-success-dark active:text-success-dark transition-all duration-200 transform hover:scale-105 active:scale-95 px-2 py-1 rounded hover:bg-success-light"
                             >
                               Approve
                             </button>
                             <button
                               onClick={() => updateSubmissionStatus(submission.id, 'rejected')}
-                              className="text-red-600 hover:text-red-900"
+                              className="text-danger hover:text-danger-dark active:text-danger-dark transition-all duration-200 transform hover:scale-105 active:scale-95 px-2 py-1 rounded hover:bg-danger-light"
                             >
                               Reject
                             </button>

@@ -1,22 +1,14 @@
-import { useAppDispatch, useAppSelector } from '../hooks/redux'
-import { toggleMapExpanded } from '../store/uiSlice'
-import { useTranslation } from '../translations'
+import { useAppSelector } from '../hooks/redux'
 import GoogleMap from './GoogleMap'
 import { MapIcon, PharmacyIcon } from './ui/Icons'
 
 export default function MapSection(): React.JSX.Element {
-  const dispatch = useAppDispatch()
-  const { language, mapExpanded } = useAppSelector(state => state.ui)
+  const { language } = useAppSelector(state => state.ui)
   const { pharmacies, selectedCity } = useAppSelector(state => state.pharmacy)
-  const t = useTranslation(language)
-
-  const handleToggleMap = (): void => {
-    dispatch(toggleMapExpanded())
-  }
 
   return (
-    <div className="bg-card border border-border rounded-xl shadow-lg">
-      <div className="p-6 border-b border-border-light bg-background-secondary">
+    <div className="bg-card border border-primary-light rounded-xl shadow-lg">
+      <div className="p-6 border-b border-primary-light bg-gradient-to-r from-primary-lighter to-background-secondary">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-primary bg-opacity-10 rounded-xl">
@@ -32,16 +24,10 @@ export default function MapSection(): React.JSX.Element {
               </div>
             </div>
           </div>
-          <button
-            onClick={handleToggleMap}
-            className="px-5 py-3 bg-primary hover:bg-primary-hover text-white rounded-lg text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-[1.02]"
-          >
-            {mapExpanded ? t('collapseMap') || 'Minimize' : t('expandMap') || 'Expand'}
-          </button>
         </div>
       </div>
 
-      <div className={`transition-all duration-300 ${mapExpanded ? 'h-96' : 'h-64'} bg-background-secondary flex items-center justify-center rounded-b-xl overflow-hidden`}>
+      <div className="transition-all duration-300 h-[720px] bg-background-secondary flex items-center justify-center rounded-b-xl overflow-hidden">
         <GoogleMap />
       </div>
     </div>

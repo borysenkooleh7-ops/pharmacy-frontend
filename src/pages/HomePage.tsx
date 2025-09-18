@@ -90,7 +90,7 @@ export default function HomePage(): React.JSX.Element {
 
             {/* No Results Message */}
             {!loading.pharmacies && !error.pharmacies && selectedCity && pharmacies.length === 0 && (
-              <div className="bg-card border border-border-light rounded-lg p-8 text-center mb-6">
+              <div className="bg-card border border-gray-200 rounded-lg p-8 text-center mb-6">
                 <div className="text-4xl mb-4">🔍</div>
                 <h3 className="text-lg font-semibold text-text-primary mb-2">
                   No pharmacies found
@@ -101,13 +101,13 @@ export default function HomePage(): React.JSX.Element {
                 <div className="flex gap-4 justify-center">
                   <button
                     onClick={() => dispatch(clearFilters())}
-                    className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-hover transition-colors shadow-md"
+                    className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-hover active:bg-primary-active transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
                   >
                     Clear Filters
                   </button>
                   <button
                     onClick={handleRetryPharmacies}
-                    className="px-4 py-2 border border-primary text-primary rounded-md hover:bg-primary-lighter transition-colors"
+                    className="px-4 py-2 border border-primary text-primary rounded-md hover:bg-primary-lighter active:bg-primary-light transition-all duration-200 transform hover:scale-105 active:scale-95 hover:shadow-md"
                   >
                     Retry
                   </button>

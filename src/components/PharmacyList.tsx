@@ -17,8 +17,8 @@ export default function PharmacyList(): React.JSX.Element {
 
   if (loading.pharmacies) {
     return (
-      <div className="bg-card border border-border-light rounded-xl shadow-lg overflow-hidden">
-        <div className="p-6 border-b border-border-light bg-background-secondary">
+      <div className="bg-card border border-primary-light rounded-xl shadow-lg overflow-hidden">
+        <div className="p-6 border-b border-primary-light bg-gradient-to-r from-primary-lighter to-background-secondary">
           <h3 className="text-xl font-semibold text-text-primary">
             Pharmacies
           </h3>
@@ -32,8 +32,8 @@ export default function PharmacyList(): React.JSX.Element {
   }
 
   return (
-    <div className="bg-card border border-border rounded-xl shadow-lg">
-      <div className="p-6 border-b border-border bg-background-secondary">
+    <div className="bg-card border border-primary-light rounded-xl shadow-lg">
+      <div className="p-6 border-b border-primary-light bg-gradient-to-r from-primary-lighter to-background-secondary">
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-semibold text-text-primary">
             Pharmacies
@@ -47,7 +47,7 @@ export default function PharmacyList(): React.JSX.Element {
       <div className="max-h-96 overflow-y-auto">
         {pharmacies.length === 0 ? (
           <div className="p-12 text-center text-text-secondary">
-            <div className="w-16 h-16 mx-auto mb-6 bg-background-tertiary rounded-full flex items-center justify-center border border-border-light">
+            <div className="w-16 h-16 mx-auto mb-6 bg-background-tertiary rounded-full flex items-center justify-center border border-primary-light">
               <SearchIcon className="w-6 h-6 text-text-tertiary" />
             </div>
             <p className="font-medium text-text-secondary">{t('noPharmaciesFound')}</p>
@@ -57,10 +57,10 @@ export default function PharmacyList(): React.JSX.Element {
             <div
               key={pharmacy.id}
               onClick={() => handlePharmacyClick(pharmacy)}
-              className={`p-5 border-b border-border last:border-b-0 cursor-pointer transition-all duration-200 hover:bg-card-hover ${
+              className={`p-5 border-b border-primary-light last:border-b-0 cursor-pointer transition-all duration-300 hover:bg-card-hover hover:shadow-md transform hover:scale-[1.01] ${
                 selectedPharmacy?.id === pharmacy.id
-                  ? 'bg-primary/10 border-l-4 border-l-primary shadow-md'
-                  : 'border-l-4 border-l-transparent hover:border-l-primary'
+                  ? 'bg-primary-lighter border-l-4 border-l-primary shadow-lg ring-2 ring-primary ring-opacity-20'
+                  : 'border-l-4 border-l-transparent hover:border-l-primary active:bg-primary-lighter'
               }`}
             >
               <div className="flex justify-between items-start mb-3">

@@ -83,8 +83,8 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
   }
 
   return (
-    <div className="bg-background border border-border rounded-xl shadow-lg">
-      <div className="p-8 border-b border-border-light bg-background-secondary">
+    <div className="bg-background border border-gray-200 rounded-xl shadow-lg">
+      <div className="p-8 border-b border-gray-200 bg-background-secondary">
         <div className="flex items-start gap-4">
           <div className="p-3 bg-primary bg-opacity-10 rounded-lg">
             <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -144,7 +144,7 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
                 onChange={handleChange}
                 required
                 placeholder="Enter pharmacy name"
-                className="w-full px-4 py-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
+                className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
               />
             </div>
 
@@ -160,7 +160,7 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
                 onChange={handleChange}
                 required
                 placeholder="contact@pharmacy.com"
-                className="w-full px-4 py-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
+                className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
               />
             </div>
           </div>
@@ -177,7 +177,7 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
               onChange={handleChange}
               required
               placeholder="Enter complete address"
-              className="w-full px-4 py-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
+              className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
             />
           </div>
 
@@ -192,7 +192,7 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
                 value={formData.city_slug}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary"
+                className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary"
               >
                 <option value="">Select city</option>
                 {cities.map(city => (
@@ -214,7 +214,7 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="+382 XX XXX XXX"
-                className="w-full px-4 py-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
+                className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
               />
             </div>
           </div>
@@ -230,20 +230,20 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
               value={formData.website}
               onChange={handleChange}
               placeholder="https://example-pharmacy.com"
-              className="w-full px-4 py-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
+              className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
             />
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-text-primary mb-4">Operating Hours</label>
             <div className="flex flex-col sm:flex-row gap-4">
-              <label className="flex items-center p-5 border border-border rounded-lg cursor-pointer hover:bg-card-hover transition-all duration-200">
+              <label className="flex items-center p-5 border border-gray-200 rounded-lg cursor-pointer hover:bg-card-hover transition-all duration-200">
                 <input
                   type="checkbox"
                   name="is_24h"
                   checked={formData.is_24h}
                   onChange={handleChange}
-                  className="w-5 h-5 text-primary bg-background border-border rounded focus:ring-primary"
+                  className="w-5 h-5 text-primary bg-background border-gray-200 rounded focus:ring-primary"
                 />
                 <div className="ml-4">
                   <span className="text-sm font-medium text-text-primary">{t('is24hours') || '24/7 Operation'}</span>
@@ -251,13 +251,13 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
                 </div>
               </label>
 
-              <label className="flex items-center p-5 border border-border rounded-lg cursor-pointer hover:bg-card-hover transition-all duration-200">
+              <label className="flex items-center p-5 border border-gray-200 rounded-lg cursor-pointer hover:bg-card-hover transition-all duration-200">
                 <input
                   type="checkbox"
                   name="open_sunday"
                   checked={formData.open_sunday}
                   onChange={handleChange}
-                  className="w-5 h-5 text-primary bg-background border-border rounded focus:ring-primary"
+                  className="w-5 h-5 text-primary bg-background border-gray-200 rounded focus:ring-primary"
                 />
                 <div className="ml-4">
                   <span className="text-sm font-medium text-text-primary">{t('openOnSunday') || 'Open on Sundays'}</span>
@@ -278,15 +278,15 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
               onChange={handleChange}
               rows={4}
               placeholder="Any additional information about the pharmacy..."
-              className="w-full px-4 py-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary resize-none"
+              className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary resize-none"
             />
           </div>
 
-          <div className="pt-6 border-t border-border-light">
+          <div className="pt-6 border-t border-gray-200">
             <button
               type="submit"
               disabled={loading.submission}
-              className="w-full sm:w-auto px-8 py-4 bg-primary hover:bg-primary-hover text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-[1.02]"
+              className="w-full sm:w-auto px-8 py-4 bg-primary hover:bg-primary-hover active:bg-primary-active text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95"
             >
               {loading.submission ? (
                 <span className="flex items-center justify-center">

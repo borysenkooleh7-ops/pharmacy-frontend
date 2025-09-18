@@ -42,26 +42,26 @@ export default function SearchSection(): React.JSX.Element {
   }
 
   return (
-    <div className="bg-card shadow-lg border border-border rounded-xl p-8 mb-8">
+    <div className="bg-card shadow-lg border border-primary-light rounded-xl p-8 mb-8">
       <div className="max-w-2xl mx-auto">
         {/* Search Type Tabs */}
-        <div className="flex mb-6 bg-background-secondary rounded-lg p-1 border border-border">
+        <div className="flex mb-6 bg-background-secondary rounded-lg p-1 border border-border-light">
           <button
             onClick={() => handleSearchTypeChange('pharmacy')}
-            className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
+            className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all duration-200 transform ${
               searchType === 'pharmacy'
-                ? 'bg-primary text-white shadow-md'
-                : 'text-text-secondary hover:text-text-primary hover:bg-card-hover'
+                ? 'bg-primary text-white shadow-lg scale-105 ring-2 ring-primary ring-opacity-30'
+                : 'text-text-secondary hover:text-white hover:bg-primary hover:shadow-lg hover:scale-105 active:scale-95 active:bg-primary-active'
             }`}
           >
             {t('searchPlaceholder').split(' ')[0]}
           </button>
           <button
             onClick={() => handleSearchTypeChange('medicine')}
-            className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
+            className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all duration-200 transform ${
               searchType === 'medicine'
-                ? 'bg-success text-white shadow-md'
-                : 'text-text-secondary hover:text-text-primary hover:bg-card-hover'
+                ? 'bg-success text-white shadow-lg scale-105 ring-2 ring-success ring-opacity-30'
+                : 'text-text-secondary hover:text-white hover:bg-success hover:shadow-lg hover:scale-105 active:scale-95 active:bg-success-hover'
             }`}
           >
             {t('medicineSearch')}
@@ -75,7 +75,7 @@ export default function SearchSection(): React.JSX.Element {
             value={searchType === 'pharmacy' ? filters.search : medicineSearchTerm}
             onChange={searchType === 'pharmacy' ? handleSearchChange : handleMedicineSearchChange}
             placeholder={searchType === 'pharmacy' ? t('searchPlaceholder') : t('medicineSearch')}
-            className="w-full px-4 py-4 pl-12 text-lg bg-background border-2 border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 text-text-primary placeholder:text-text-tertiary shadow-sm focus:shadow-md"
+            className="w-full px-4 py-4 pl-12 text-lg bg-white border-2 border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 text-text-primary placeholder:text-text-tertiary shadow-sm focus:shadow-lg hover:border-primary"
           />
           <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
             {searchType === 'pharmacy' ? (
@@ -93,8 +93,8 @@ export default function SearchSection(): React.JSX.Element {
 
         {/* Error Display */}
         {error.medicines && searchType === 'medicine' && (
-          <div className="mt-4 p-4 bg-destructive-light border border-destructive rounded-lg">
-            <p className="text-destructive text-sm font-medium">
+          <div className="mt-4 p-4 bg-danger-light border border-danger rounded-lg">
+            <p className="text-danger text-sm font-medium">
               Failed to search medicines. Please try again.
             </p>
           </div>
@@ -102,11 +102,11 @@ export default function SearchSection(): React.JSX.Element {
 
         {/* Medicine Search Results */}
         {searchType === 'medicine' && medicines.length > 0 && (
-          <div className="mt-6 max-h-60 overflow-y-auto bg-background-secondary rounded-lg border border-border-light shadow-md">
+          <div className="mt-6 max-h-60 overflow-y-auto bg-background-secondary rounded-lg border border-primary-light shadow-md">
             {medicines.map((medicine: Medicine) => (
               <div
                 key={medicine.id}
-                className="p-4 hover:bg-card cursor-pointer border-b border-border-light last:border-b-0 transition-all duration-200 hover:shadow-sm"
+                className="p-4 hover:bg-card cursor-pointer border-b border-border-light last:border-b-0 transition-all duration-300 hover:shadow-md hover:bg-primary-lighter hover:border-l-4 hover:border-l-primary transform hover:scale-[1.01]"
               >
                 <h4 className="font-medium text-text-primary">
                   {language === 'me' ? medicine.name_me : (medicine.name_en || medicine.name_me)}

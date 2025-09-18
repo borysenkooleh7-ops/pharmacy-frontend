@@ -27,7 +27,7 @@ export default function ErrorMessage({ error, onRetry, className = '' }: ErrorMe
           {onRetry && (
             <button
               onClick={onRetry}
-              className="inline-flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:shadow-lg transform hover:scale-105"
+              className="inline-flex items-center gap-2 bg-danger hover:bg-danger-hover active:bg-danger-dark text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:shadow-lg transform hover:scale-105 active:scale-95"
             >
               <ErrorIcon className="w-4 h-4" />
               Try Again
