@@ -110,36 +110,27 @@ export default function Header(): React.JSX.Element {
   }
 
   return (
-    <header className="bg-white shadow-lg border-b border-gray-100">
-      <div className="container mx-auto px-4 py-4">
+    <header className="bg-white shadow-sm border-b border-gray-200">
+      <div className="container mx-auto px-4 py-6">
         {/* Top Row - Logo and Controls */}
         <div className="flex flex-col lg:flex-row justify-between items-center gap-4 mb-6">
           <div className="flex flex-col lg:flex-row items-center gap-6">
-            <Link to="/" className="text-center lg:text-left group">
-              <h1 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent group-hover:scale-105 transition-transform">
+            <Link to="/" className="text-center lg:text-left">
+              <h1 className="text-2xl lg:text-3xl font-bold text-primary">
                 Apoteka24.me
               </h1>
-              <p className="text-sm lg:text-base text-text-secondary mt-1">{t('slogan')}</p>
+              <p className="text-sm lg:text-base text-text-secondary">{t('slogan')}</p>
             </Link>
-
-            <nav className="hidden lg:flex items-center gap-6">
-              <Link to="/" className="text-text-primary hover:text-primary transition-colors font-medium px-3 py-2 rounded-lg hover:bg-primary-light hover:bg-opacity-10">
-                {t('home')}
-              </Link>
-              <Link to="/submit" className="text-text-primary hover:text-primary transition-colors font-medium px-3 py-2 rounded-lg hover:bg-primary-light hover:bg-opacity-10">
-                {t('addPharmacy')}
-              </Link>
-            </nav>
           </div>
 
           <div className="flex items-center gap-4">
             {/* City Selector with Location Detection */}
-            <div className="flex items-center gap-2 bg-gray-50 rounded-lg p-1">
+            <div className="flex items-center gap-2">
               <select
                 value={selectedCity?.id || ''}
                 onChange={handleCityChange}
                 disabled={loading.cities}
-                className="px-3 py-2 rounded-lg bg-transparent text-text-primary border-none focus:outline-none disabled:opacity-50 min-w-[140px] font-medium cursor-pointer"
+                className="px-3 py-2 border border-gray-300 rounded-md bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50"
               >
                 <option value="">{loading.cities ? 'Loading...' : t('selectCity')}</option>
                 {cities.map(city => (
@@ -152,27 +143,27 @@ export default function Header(): React.JSX.Element {
               <button
                 onClick={detectLocation}
                 disabled={loadingLocation || loading.cities}
-                className="p-2 bg-primary hover:bg-primary-hover rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                className="p-2 bg-primary hover:bg-primary-hover text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 title={t('detectLocation') || 'Detect my location'}
               >
-                <LocationIcon className={`w-4 h-4 text-white ${loadingLocation ? 'animate-spin' : ''}`} />
+                <LocationIcon className={`w-4 h-4 ${loadingLocation ? 'animate-spin' : ''}`} />
               </button>
             </div>
 
             {/* Language Switcher */}
-            <div className="flex items-center bg-gray-50 rounded-lg p-1">
+            <div className="flex border border-gray-300 rounded-md overflow-hidden">
               <button
                 onClick={() => handleLanguageChange('me')}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                  language === 'me' ? 'bg-primary text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white'
+                className={`px-3 py-2 text-sm font-medium transition-colors ${
+                  language === 'me' ? 'bg-primary text-white' : 'bg-white text-text-primary hover:bg-gray-50'
                 }`}
               >
                 ME
               </button>
               <button
                 onClick={() => handleLanguageChange('en')}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                  language === 'en' ? 'bg-primary text-white shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-white'
+                className={`px-3 py-2 text-sm font-medium transition-colors ${
+                  language === 'en' ? 'bg-primary text-white' : 'bg-white text-text-primary hover:bg-gray-50'
                 }`}
               >
                 EN
@@ -181,82 +172,54 @@ export default function Header(): React.JSX.Element {
           </div>
         </div>
 
-        {/* Search and Filters Row */}
-        <div className="bg-gradient-to-r from-primary to-primary-hover rounded-xl p-6 shadow-lg">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search Input */}
-            <div className="flex-1 relative">
-              <div className="relative group">
-                <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-primary transition-colors" />
-                <input
-                  type="text"
-                  placeholder={t('searchPlaceholder') || 'Find pharmacies or medicines...'}
-                  value={filters.search || ''}
-                  onChange={handleSearchChange}
-                  className="w-full pl-12 pr-4 py-4 rounded-xl bg-white text-text-primary border-2 border-transparent focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary focus:ring-opacity-20 placeholder-gray-400 shadow-sm transition-all duration-200 text-lg"
-                />
-              </div>
-            </div>
-
-            {/* Filter Buttons */}
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 px-5 py-4 bg-white bg-opacity-20 hover:bg-white hover:text-primary rounded-xl transition-all duration-200 text-white font-medium shadow-sm hover:shadow-md transform hover:scale-105"
-              >
-                <FiltersIcon className="w-5 h-5" />
-                {t('filters') || 'Filters'}
-              </button>
-
-              <button
-                onClick={() => handleFilterChange('is24h', !filters?.is24h)}
-                className={`flex items-center gap-2 px-5 py-4 rounded-xl transition-all duration-200 font-medium shadow-sm hover:shadow-md transform hover:scale-105 ${
-                  filters?.is24h
-                    ? 'bg-white text-primary shadow-lg scale-105'
-                    : 'bg-white bg-opacity-20 hover:bg-white hover:text-primary text-white'
-                }`}
-              >
-                <ClockIcon className="w-5 h-5" />
-                <span className="hidden sm:inline">{t('24hours') || '24h'}</span>
-                <span className="sm:hidden">24h</span>
-              </button>
-
-              <button
-                onClick={() => handleFilterChange('openSunday', !filters?.openSunday)}
-                className={`flex items-center gap-2 px-5 py-4 rounded-xl transition-all duration-200 font-medium shadow-sm hover:shadow-md transform hover:scale-105 ${
-                  filters?.openSunday
-                    ? 'bg-white text-primary shadow-lg scale-105'
-                    : 'bg-white bg-opacity-20 hover:bg-white hover:text-primary text-white'
-                }`}
-              >
-                <CheckIcon className="w-5 h-5" />
-                <span className="hidden sm:inline">{t('sunday') || 'Sunday'}</span>
-                <span className="sm:hidden">Sun</span>
-              </button>
-            </div>
+        {/* Search Section */}
+        <div className="mb-4">
+          <div className="relative max-w-2xl">
+            <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder={t('searchPlaceholder') || 'Find a pharmacy'}
+              value={filters.search || ''}
+              onChange={handleSearchChange}
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder-gray-500"
+            />
           </div>
+        </div>
 
-          {/* Extended Filters (Hidden by default) */}
-          {showFilters && (
-            <div className="mt-4 pt-4 border-t border-white border-opacity-20">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-white mb-2">
-                    {t('sortBy') || 'Sort by'}
-                  </label>
-                  <select
-                    value={filters?.sortBy || 'name'}
-                    onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-white text-text-primary border border-transparent focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
-                  >
-                    <option value="name">{t('name') || 'Name'}</option>
-                    <option value="distance">{t('distance') || 'Distance'}</option>
-                    <option value="rating">{t('rating') || 'Rating'}</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          )}
+        {/* Filter Buttons */}
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={() => handleFilterChange('is24h', !filters?.is24h)}
+            className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors ${
+              filters?.is24h
+                ? 'bg-primary text-white border-primary'
+                : 'bg-white text-text-primary border-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            24-hour pharmacies
+          </button>
+
+          <button
+            onClick={() => handleFilterChange('openSunday', !filters?.openSunday)}
+            className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors ${
+              filters?.openSunday
+                ? 'bg-primary text-white border-primary'
+                : 'bg-white text-text-primary border-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            Open on Sundays
+          </button>
+
+          <button
+            onClick={() => handleFilterChange('nearby', !filters?.nearby)}
+            className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors ${
+              filters?.nearby
+                ? 'bg-primary text-white border-primary'
+                : 'bg-white text-text-primary border-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            Nearby pharmacies
+          </button>
         </div>
       </div>
     </header>

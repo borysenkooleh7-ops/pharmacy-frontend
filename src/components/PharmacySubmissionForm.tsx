@@ -83,29 +83,40 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-      <div className="bg-gradient-to-r from-primary to-primary-hover text-white p-6">
-        <h2 className="text-2xl font-bold mb-2">
-          {t('submitPharmacy') || 'Add New Pharmacy'}
-        </h2>
-        <p className="text-white text-opacity-90">
-          {t('submitPharmacySubtitle') || 'Help us expand our pharmacy network in Montenegro'}
-        </p>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border-b border-gray-100 p-8">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+              {t('submitPharmacy') || 'Add New Pharmacy'}
+            </h2>
+            <p className="text-gray-600 text-lg leading-relaxed">
+              {t('submitPharmacySubtitle') || 'Help us expand our pharmacy network in Montenegro. Your contribution makes a difference!'}
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="p-6">
+      <div className="p-8">
 
         {/* Success Message */}
         {submissionSuccess && (
-          <div className="p-4 rounded-xl mb-6 bg-success bg-opacity-10 text-success border border-success border-opacity-20">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-success text-white rounded-full flex items-center justify-center">
-                ✓
+          <div className="p-6 rounded-xl mb-8 bg-emerald-50 border border-emerald-200">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-emerald-500 text-white rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
               </div>
               <div>
-                <h3 className="font-semibold">{t('success') || 'Success!'}</h3>
-                <p className="text-sm opacity-90">
-                  {language === 'me' ? 'Hvala! Vaš zahtjev je uspješno poslat.' : 'Thank you! Your request has been submitted successfully.'}
+                <h3 className="font-bold text-emerald-900 text-lg mb-1">{t('success') || 'Successfully Submitted!'}</h3>
+                <p className="text-emerald-800">
+                  {language === 'me' ? 'Hvala! Vaš zahtjev je uspješno poslat i bit će razmojen u najkraćem mogućem roku.' : 'Thank you! Your pharmacy submission has been received and will be reviewed shortly.'}
                 </p>
               </div>
             </div>
@@ -121,161 +132,179 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
           />
         )}
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-text-primary mb-1">
-            {t('pharmacyName')} *
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-gray-50 focus:bg-white"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-text-primary mb-1">
-            {t('pharmacyEmail')} *
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-gray-50 focus:bg-white"
-          />
-        </div>
-
-        <div className="md:col-span-2">
-          <label htmlFor="address" className="block text-sm font-medium text-text-primary mb-1">
-            {t('pharmacyAddress')} *
-          </label>
-          <input
-            type="text"
-            id="address"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-gray-50 focus:bg-white"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="city_slug" className="block text-sm font-medium text-text-primary mb-1">
-            Grad *
-          </label>
-          <select
-            id="city_slug"
-            name="city_slug"
-            value={formData.city_slug}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-gray-50 focus:bg-white"
-          >
-            <option value="">Izaberite grad</option>
-            {cities.map(city => (
-              <option key={city.slug} value={city.slug}>
-                {language === 'me' ? city.name_me : city.name_en}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-text-primary mb-1">
-            {t('pharmacyPhone')}
-          </label>
-          <input
-            type="tel"
-            id="phone"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-gray-50 focus:bg-white"
-          />
-        </div>
-
-        <div className="md:col-span-2">
-          <label htmlFor="website" className="block text-sm font-medium text-text-primary mb-1">
-            {t('pharmacyWebsite')}
-          </label>
-          <input
-            type="url"
-            id="website"
-            name="website"
-            value={formData.website}
-            onChange={handleChange}
-            placeholder="https://"
-            className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-gray-50 focus:bg-white"
-          />
-        </div>
-
-        <div className="md:col-span-2">
-          <div className="flex flex-wrap gap-4">
-            <label className="flex items-center">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label htmlFor="name" className="block text-sm font-semibold text-gray-900">
+                {t('pharmacyName')} <span className="text-red-500">*</span>
+              </label>
               <input
-                type="checkbox"
-                name="is_24h"
-                checked={formData.is_24h}
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
-                className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary"
+                required
+                placeholder="Enter pharmacy name..."
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-white hover:border-gray-400"
               />
-              <span className="ml-2 text-sm text-text-primary">{t('is24hours')}</span>
-            </label>
+            </div>
 
-            <label className="flex items-center">
+            <div className="space-y-2">
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-900">
+                {t('pharmacyEmail')} <span className="text-red-500">*</span>
+              </label>
               <input
-                type="checkbox"
-                name="open_sunday"
-                checked={formData.open_sunday}
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
-                className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary"
+                required
+                placeholder="contact@pharmacy.com"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-white hover:border-gray-400"
               />
-              <span className="ml-2 text-sm text-text-primary">{t('openOnSunday')}</span>
-            </label>
+            </div>
           </div>
-        </div>
 
-        <div className="md:col-span-2">
-          <label htmlFor="notes" className="block text-sm font-medium text-text-primary mb-1">
-            {t('additionalNotes')}
-          </label>
-          <textarea
-            id="notes"
-            name="notes"
-            value={formData.notes}
-            onChange={handleChange}
-            rows={3}
-            className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-gray-50 focus:bg-white"
-          />
-        </div>
+          <div className="space-y-2">
+            <label htmlFor="address" className="block text-sm font-semibold text-gray-900">
+              {t('pharmacyAddress')} <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="address"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              required
+              placeholder="Enter full pharmacy address..."
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-white hover:border-gray-400"
+            />
+          </div>
 
-        <div className="md:col-span-2 pt-4">
-          <button
-            type="submit"
-            disabled={loading.submission}
-            className="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-primary to-primary-hover text-white font-semibold rounded-xl hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105"
-          >
-            {loading.submission ? (
-              <span className="flex items-center justify-center">
-                <LoadingSpinner size="sm" className="mr-2" />
-                {language === 'me' ? 'Шаље се...' : 'Submitting...'}
-              </span>
-            ) : (
-              <span className="flex items-center justify-center gap-2">
-                {t('submit') || 'Submit Pharmacy'}
-                <span className="text-lg">→</span>
-              </span>
-            )}
-          </button>
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label htmlFor="city_slug" className="block text-sm font-semibold text-gray-900">
+                City <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="city_slug"
+                name="city_slug"
+                value={formData.city_slug}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-white hover:border-gray-400"
+              >
+                <option value="">Select city...</option>
+                {cities.map(city => (
+                  <option key={city.slug} value={city.slug}>
+                    {language === 'me' ? city.name_me : city.name_en}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="phone" className="block text-sm font-semibold text-gray-900">
+                {t('pharmacyPhone')}
+              </label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="+382 XX XXX XXX"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-white hover:border-gray-400"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="website" className="block text-sm font-semibold text-gray-900">
+              {t('pharmacyWebsite')}
+            </label>
+            <input
+              type="url"
+              id="website"
+              name="website"
+              value={formData.website}
+              onChange={handleChange}
+              placeholder="https://example-pharmacy.com"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-white hover:border-gray-400"
+            />
+          </div>
+
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-gray-900">Operating Hours</h4>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <label className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                <input
+                  type="checkbox"
+                  name="is_24h"
+                  checked={formData.is_24h}
+                  onChange={handleChange}
+                  className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                />
+                <div className="ml-3">
+                  <span className="text-sm font-medium text-gray-900">{t('is24hours') || '24/7 Operation'}</span>
+                  <p className="text-xs text-gray-500">Open 24 hours, 7 days a week</p>
+                </div>
+              </label>
+
+              <label className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                <input
+                  type="checkbox"
+                  name="open_sunday"
+                  checked={formData.open_sunday}
+                  onChange={handleChange}
+                  className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                />
+                <div className="ml-3">
+                  <span className="text-sm font-medium text-gray-900">{t('openOnSunday') || 'Open on Sundays'}</span>
+                  <p className="text-xs text-gray-500">Available on Sunday</p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="notes" className="block text-sm font-semibold text-gray-900">
+              {t('additionalNotes') || 'Additional Information'}
+            </label>
+            <textarea
+              id="notes"
+              name="notes"
+              value={formData.notes}
+              onChange={handleChange}
+              rows={4}
+              placeholder="Any additional information about the pharmacy, special services, or operating hours..."
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-white hover:border-gray-400 resize-none"
+            />
+          </div>
+
+          <div className="pt-6 border-t border-gray-200">
+            <button
+              type="submit"
+              disabled={loading.submission}
+              className="w-full sm:w-auto px-8 py-4 bg-primary hover:bg-primary-hover text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
+            >
+              {loading.submission ? (
+                <span className="flex items-center justify-center">
+                  <LoadingSpinner size="sm" className="mr-3" />
+                  {language === 'me' ? 'Submitting...' : 'Submitting...'}
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-3">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  {t('submit') || 'Submit New Pharmacy'}
+                </span>
+              )}
+            </button>
+          </div>
 
         </form>
       </div>
