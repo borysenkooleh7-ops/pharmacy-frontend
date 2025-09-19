@@ -15,7 +15,7 @@ export default function Header(): React.JSX.Element {
   const { language } = useAppSelector(state => state.ui)
   const { cities, selectedCity, loading } = useAppSelector(state => state.pharmacy)
   const t = useTranslation(language)
-
+  
   const handleLanguageChange = (newLang: 'me' | 'en'): void => {
     dispatch(setLanguage(newLang))
   }
@@ -104,13 +104,14 @@ export default function Header(): React.JSX.Element {
       <div className="container mx-auto px-6 py-6">
         {/* Top Row - Logo and Controls */}
         <div className="flex flex-col lg:flex-row justify-between items-center gap-6">
-          <div className="flex flex-col lg:flex-row items-center gap-6">
-            <Link to="/" className="text-center lg:text-left">
+          <div className="flex flex-col lg:flex-row items-center gap-6 cursor-pointer">
+            <button
+             onClick={() => navigate("/")} className="text-center lg:text-left">
               <h1 className="text-3xl lg:text-4xl font-bold text-white">
                 Apoteka24.me
               </h1>
               <p className="text-lg text-primary-light">{t('slogan')}</p>
-            </Link>
+            </button>
           </div>
 
           <div className="flex items-center gap-4">

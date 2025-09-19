@@ -1,19 +1,31 @@
 import { useState, useEffect } from 'react'
 import { useAppSelector } from '../hooks/redux'
 import { apiService } from '../services/api'
+import { useNavigate } from 'react-router-dom'
 
 interface Submission {
   id: string
-  name: string
+  name_me: string
+  name_en?: string
   address: string
   city_slug: string
+  city_id?: number
   email: string
   phone?: string
   website?: string
+  lat: number
+  lng: number
   is_24h: boolean
   open_sunday: boolean
+  hours_monfri: string
+  hours_sat: string
+  hours_sun: string
+  notes?: string
   status: 'received' | 'approved' | 'rejected' | 'reviewed'
+  review_notes?: string
+  active: boolean
   created_at: string
+  updated_at: string
 }
 
 export default function AdminPanel(): React.JSX.Element {
@@ -23,6 +35,7 @@ export default function AdminPanel(): React.JSX.Element {
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [message, setMessage] = useState<string>('')
+  const navigate = useNavigate()
 
   const authenticate = (): void => {
     if (adminKey === 'admin123') {
@@ -82,12 +95,20 @@ export default function AdminPanel(): React.JSX.Element {
             />
           </div>
 
-          <button
-            onClick={authenticate}
-            className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-hover active:bg-primary-active transition-all duration-200 transform hover:scale-105 active:scale-95 hover:shadow-md"
-          >
-            Login
-          </button>
+          <div className='w-full text-white py-2 px-4 rounded-md hover:bg-primary-hover active:bg-primary-active transition-all duration-200 transform hover:scale-105 active:scale-95 hover:shadow-md flex gap-4'>
+            <button
+              onClick={() => navigate('/')}
+              className=" bg-primary"
+            >
+              Go back
+            </button>
+            <button
+              onClick={authenticate}
+              className=" bg-primary"
+            >
+              Login
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -144,16 +165,19 @@ export default function AdminPanel(): React.JSX.Element {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Pharmacy Details
+                      Names & Location
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Contact
+                      Address & Coordinates
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
+                      Operating Hours
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date
+                      Contact & Website
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status & Notes
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
@@ -163,18 +187,21 @@ export default function AdminPanel(): React.JSX.Element {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {submissions.map((submission: Submission) => (
                     <tr key={submission.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-4 whitespace-nowrap">
+                      {/* Names & Location */}
+                      <td className="px-4 py-4">
                         <div>
                           <div className="text-sm font-medium text-gray-900">
-                            {submission.name}
+                            🇲🇪 {submission.name_me}
                           </div>
-                          <div className="text-sm text-gray-500">
-                            {submission.address}
+                          {submission.name_en && (
+                            <div className="text-sm text-gray-600">
+                              🇬🇧 {submission.name_en}
+                            </div>
+                          )}
+                          <div className="text-sm text-gray-500 mt-1">
+                            📍 {submission.city_slug}
                           </div>
-                          <div className="text-sm text-gray-500">
-                            {submission.city_slug}
-                          </div>
-                          <div className="flex gap-2 mt-1">
+                          <div className="flex gap-1 mt-2">
                             {submission.is_24h && (
                               <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                                 24/7
@@ -188,50 +215,104 @@ export default function AdminPanel(): React.JSX.Element {
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {submission.email}
+
+                      {/* Address & Coordinates */}
+                      <td className="px-4 py-4">
+                        <div>
+                          <div className="text-sm text-gray-900 mb-2">
+                            {submission.address}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            <div>📌 Lat: {submission.lat}</div>
+                            <div>📌 Lng: {submission.lng}</div>
+                          </div>
                         </div>
-                        {submission.phone && (
-                          <div className="text-sm text-gray-500">
-                            {submission.phone}
+                      </td>
+
+                      {/* Operating Hours */}
+                      <td className="px-4 py-4">
+                        <div className="space-y-1">
+                          <div className="text-xs">
+                            <span className="font-medium">Mon-Fri:</span>
+                            <br />
+                            <span className="text-gray-600">{submission.hours_monfri}</span>
                           </div>
-                        )}
-                        {submission.website && (
-                          <div className="text-sm text-gray-500">
-                            <a href={submission.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                              Website
-                            </a>
+                          <div className="text-xs">
+                            <span className="font-medium">Sat:</span>
+                            <br />
+                            <span className="text-gray-600">{submission.hours_sat}</span>
                           </div>
-                        )}
+                          <div className="text-xs">
+                            <span className="font-medium">Sun:</span>
+                            <br />
+                            <span className="text-gray-600">{submission.hours_sun}</span>
+                          </div>
+                        </div>
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          submission.status === 'approved' ? 'bg-green-100 text-green-800' :
-                          submission.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                          submission.status === 'reviewed' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {submission.status}
-                        </span>
+
+                      {/* Contact & Website */}
+                      <td className="px-4 py-4">
+                        <div>
+                          <div className="text-sm text-gray-900 mb-1">
+                            📧 {submission.email}
+                          </div>
+                          {submission.phone && (
+                            <div className="text-sm text-gray-600 mb-1">
+                              📞 {submission.phone}
+                            </div>
+                          )}
+                          {submission.website && (
+                            <div className="text-sm">
+                              <a href={submission.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                🌐 Website
+                              </a>
+                            </div>
+                          )}
+                        </div>
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(submission.created_at).toLocaleDateString()}
+
+                      {/* Status & Notes */}
+                      <td className="px-4 py-4">
+                        <div>
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full mb-2 ${
+                            submission.status === 'approved' ? 'bg-green-100 text-green-800' :
+                            submission.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                            submission.status === 'reviewed' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {submission.status}
+                          </span>
+                          <div className="text-xs text-gray-500">
+                            {new Date(submission.created_at).toLocaleDateString()}
+                          </div>
+                          {submission.notes && (
+                            <div className="text-xs text-gray-600 mt-1 max-w-xs">
+                              <strong>Notes:</strong> {submission.notes}
+                            </div>
+                          )}
+                          {submission.review_notes && (
+                            <div className="text-xs text-blue-600 mt-1 max-w-xs">
+                              <strong>Review:</strong> {submission.review_notes}
+                            </div>
+                          )}
+                        </div>
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+
+                      {/* Actions */}
+                      <td className="px-4 py-4 text-sm font-medium">
                         {submission.status === 'received' && (
-                          <div className="flex gap-2">
+                          <div className="flex flex-col gap-2">
                             <button
                               onClick={() => updateSubmissionStatus(submission.id, 'approved')}
-                              className="text-success hover:text-success-dark active:text-success-dark transition-all duration-200 transform hover:scale-105 active:scale-95 px-2 py-1 rounded hover:bg-success-light"
+                              className="text-success hover:text-success-dark active:text-success-dark transition-all duration-200 transform hover:scale-105 active:scale-95 px-3 py-1 rounded hover:bg-success-light text-xs"
                             >
-                              Approve
+                              ✅ Approve
                             </button>
                             <button
                               onClick={() => updateSubmissionStatus(submission.id, 'rejected')}
-                              className="text-danger hover:text-danger-dark active:text-danger-dark transition-all duration-200 transform hover:scale-105 active:scale-95 px-2 py-1 rounded hover:bg-danger-light"
+                              className="text-danger hover:text-danger-dark active:text-danger-dark transition-all duration-200 transform hover:scale-105 active:scale-95 px-3 py-1 rounded hover:bg-danger-light text-xs"
                             >
-                              Reject
+                              ❌ Reject
                             </button>
                           </div>
                         )}

@@ -110,9 +110,6 @@ export default function HomePage(): React.JSX.Element {
                 </div>
               </div>
             )}
-
-            {/* Pharmacy Submission Form */}
-            <PharmacySubmissionForm />
           </div>
         </div>
       </div>

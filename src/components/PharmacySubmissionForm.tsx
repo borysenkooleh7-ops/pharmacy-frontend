@@ -4,7 +4,6 @@ import { useTranslation } from '../translations'
 import { useAppDispatch, useAppSelector } from '../hooks/redux'
 import LoadingSpinner from './ui/LoadingSpinner'
 import ErrorMessage from './ui/ErrorMessage'
-import type { City, PharmacySubmissionData } from '@/types'
 
 export default function PharmacySubmissionForm(): React.JSX.Element {
   const dispatch = useAppDispatch()
@@ -19,14 +18,20 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
   const t = useTranslation(language)
 
   const [formData, setFormData] = useState({
-    name: '',
+    name_me: '',
+    name_en: '',
     address: '',
     city_slug: selectedCity?.slug || '',
     phone: '',
     website: '',
     email: '',
+    lat: '',
+    lng: '',
     is_24h: false,
     open_sunday: false,
+    hours_monfri: '',
+    hours_sat: '',
+    hours_sun: '',
     notes: ''
   })
 
@@ -44,14 +49,20 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
   useEffect(() => {
     if (submissionSuccess) {
       setFormData({
-        name: '',
+        name_me: '',
+        name_en: '',
         address: '',
         city_slug: selectedCity?.slug || '',
         phone: '',
         website: '',
         email: '',
+        lat: '',
+        lng: '',
         is_24h: false,
         open_sunday: false,
+        hours_monfri: '',
+        hours_sat: '',
+        hours_sun: '',
         notes: ''
       })
       // Clear success message after 5 seconds
@@ -62,15 +73,16 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
     }
   }, [submissionSuccess, selectedCity, dispatch])
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target
+    const checked = (e.target as HTMLInputElement).checked
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }))
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     // Clear any previous errors
@@ -133,36 +145,51 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-semibold text-text-primary mb-3">
-                {t('pharmacyName')} <span className="text-danger">*</span>
+              <label htmlFor="name_me" className="block text-sm font-semibold text-text-primary mb-3">
+                {t('pharmacyName')} (Montenegrin) <span className="text-danger">*</span>
               </label>
               <input
                 type="text"
-                id="name"
-                name="name"
-                value={formData.name}
+                id="name_me"
+                name="name_me"
+                value={formData.name_me}
                 onChange={handleChange}
                 required
-                placeholder="Enter pharmacy name"
+                placeholder="Naziv apoteke na crnogorskom"
                 className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
               />
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-text-primary mb-3">
-                {t('pharmacyEmail')} <span className="text-danger">*</span>
+              <label htmlFor="name_en" className="block text-sm font-semibold text-text-primary mb-3">
+                {t('pharmacyName')} (English)
               </label>
               <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
+                type="text"
+                id="name_en"
+                name="name_en"
+                value={formData.name_en}
                 onChange={handleChange}
-                required
-                placeholder="contact@pharmacy.com"
+                placeholder="Pharmacy name in English"
                 className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
               />
             </div>
+          </div>
+
+          <div>
+            <label htmlFor="email" className="block text-sm font-semibold text-text-primary mb-3">
+              {t('pharmacyEmail')} <span className="text-danger">*</span>
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              placeholder="contact@pharmacy.com"
+              className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
+            />
           </div>
 
           <div>
@@ -179,6 +206,42 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
               placeholder="Enter complete address"
               className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
             />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="lat" className="block text-sm font-semibold text-text-primary mb-3">
+                Latitude
+              </label>
+              <input
+                type="number"
+                step="0.000001"
+                id="lat"
+                name="lat"
+                value={formData.lat}
+                onChange={handleChange}
+                placeholder="42.441180"
+                className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
+              />
+              <p className="text-xs text-text-secondary mt-2">GPS coordinate (e.g., 42.441180)</p>
+            </div>
+
+            <div>
+              <label htmlFor="lng" className="block text-sm font-semibold text-text-primary mb-3">
+                Longitude
+              </label>
+              <input
+                type="number"
+                step="0.000001"
+                id="lng"
+                name="lng"
+                value={formData.lng}
+                onChange={handleChange}
+                placeholder="19.262112"
+                className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
+              />
+              <p className="text-xs text-text-secondary mt-2">GPS coordinate (e.g., 19.262112)</p>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -236,8 +299,10 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
 
           <div>
             <label className="block text-sm font-semibold text-text-primary mb-4">Operating Hours</label>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <label className="flex items-center p-5 border border-gray-200 rounded-lg cursor-pointer hover:bg-card-hover transition-all duration-200">
+
+            {/* Quick Options */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-card-hover transition-all duration-200">
                 <input
                   type="checkbox"
                   name="is_24h"
@@ -245,13 +310,13 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
                   onChange={handleChange}
                   className="w-5 h-5 text-primary bg-background border-gray-200 rounded focus:ring-primary"
                 />
-                <div className="ml-4">
+                <div className="ml-3">
                   <span className="text-sm font-medium text-text-primary">{t('is24hours') || '24/7 Operation'}</span>
                   <p className="text-xs text-text-secondary mt-1">Open 24 hours, 7 days a week</p>
                 </div>
               </label>
 
-              <label className="flex items-center p-5 border border-gray-200 rounded-lg cursor-pointer hover:bg-card-hover transition-all duration-200">
+              <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-card-hover transition-all duration-200">
                 <input
                   type="checkbox"
                   name="open_sunday"
@@ -259,12 +324,66 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
                   onChange={handleChange}
                   className="w-5 h-5 text-primary bg-background border-gray-200 rounded focus:ring-primary"
                 />
-                <div className="ml-4">
+                <div className="ml-3">
                   <span className="text-sm font-medium text-text-primary">{t('openOnSunday') || 'Open on Sundays'}</span>
                   <p className="text-xs text-text-secondary mt-1">Available on Sunday</p>
                 </div>
               </label>
             </div>
+
+            {/* Detailed Hours */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label htmlFor="hours_monfri" className="block text-sm font-semibold text-text-primary mb-3">
+                  Monday - Friday <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="hours_monfri"
+                  name="hours_monfri"
+                  value={formData.hours_monfri}
+                  onChange={handleChange}
+                  required
+                  placeholder="08:00 - 20:00"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="hours_sat" className="block text-sm font-semibold text-text-primary mb-3">
+                  Saturday <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="hours_sat"
+                  name="hours_sat"
+                  value={formData.hours_sat}
+                  onChange={handleChange}
+                  required
+                  placeholder="08:00 - 16:00"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="hours_sun" className="block text-sm font-semibold text-text-primary mb-3">
+                  Sunday <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="hours_sun"
+                  name="hours_sun"
+                  value={formData.hours_sun}
+                  onChange={handleChange}
+                  required
+                  placeholder="Closed or 10:00 - 14:00"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
+                />
+              </div>
+            </div>
+            <p className="text-xs text-text-secondary mt-2">
+              Enter hours in format "08:00 - 20:00" or "Closed" if not open
+            </p>
           </div>
 
           <div>

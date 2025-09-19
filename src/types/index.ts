@@ -68,14 +68,20 @@ export interface Ad {
 
 // Form data types
 export interface PharmacySubmissionData {
-  name: string
+  name_me: string
+  name_en?: string
   address: string
   city_slug: string
   phone?: string
   website?: string
   email: string
+  lat: string | number
+  lng: string | number
   is_24h: boolean
   open_sunday: boolean
+  hours_monfri: string
+  hours_sat: string
+  hours_sun: string
   notes?: string
 }
 
