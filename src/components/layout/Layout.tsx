@@ -22,7 +22,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
     <ErrorBoundary>
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="container mx-auto px-4 py-6">
+        <main className="container mx-auto px-4 py-2">
           {children}
         </main>
       </div>

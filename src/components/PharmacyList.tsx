@@ -44,7 +44,7 @@ export default function PharmacyList(): React.JSX.Element {
         </div>
       </div>
 
-      <div className="max-h-96 overflow-y-auto">
+      <div className="max-h-screen overflow-y-auto overflow-x-hidden">
         {pharmacies.length === 0 ? (
           <div className="p-12 text-center text-text-secondary">
             <div className="w-16 h-16 mx-auto mb-6 bg-background-tertiary rounded-full flex items-center justify-center border border-primary-light">

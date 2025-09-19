@@ -48,7 +48,7 @@ export default function GoogleMap(): React.JSX.Element {
     const loader = new Loader({
       apiKey: GOOGLE_MAPS_API_KEY,
       version: 'weekly',
-      libraries: ['maps', 'marker']
+      libraries: ['maps', 'marker', 'streetView']
     })
 
     try {
@@ -58,12 +58,37 @@ export default function GoogleMap(): React.JSX.Element {
 
       mapInstanceRef.current = new google.maps.Map(mapRef.current, {
         center,
-        zoom: 13,
+        zoom: 18,
         mapId: 'DEMO_MAP_ID',
         mapTypeControl: true,
+        mapTypeControlOptions: {
+          style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+          position: google.maps.ControlPosition.TOP_CENTER,
+          mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain']
+        },
         streetViewControl: true,
+        streetViewControlOptions: {
+          position: google.maps.ControlPosition.RIGHT_TOP
+        },
         fullscreenControl: true,
-        zoomControl: true
+        zoomControl: true,
+        rotateControl: true,
+        rotateControlOptions: {
+          position: google.maps.ControlPosition.LEFT_CENTER
+        },
+        tilt: 45,
+        heading: 0,
+        gestureHandling: 'greedy',
+        clickableIcons: true,
+        isFractionalZoomEnabled: true
+      })
+
+      // Enable 45° imagery for satellite and hybrid map types (post-deprecation)
+      mapInstanceRef.current.addListener('maptypeid_changed', () => {
+        const mapType = mapInstanceRef.current.getMapTypeId()
+        if (mapType === 'satellite' || mapType === 'hybrid') {
+          mapInstanceRef.current.setTilt(45)
+        }
       })
 
       updateMarkers()
@@ -99,29 +124,144 @@ export default function GoogleMap(): React.JSX.Element {
         lng
       }
 
-      // Determine marker color based on pharmacy type
-      let markerColor = '#8168f0' // default blue
+      // Determine marker color based on pharmacy type - using even darker, more distinctive colors
+      let markerColor = '#0f379a' // very dark blue-black for default
+      let borderColor = '#ffffff'
+      let iconColor = '#ffffff'
+
       if (pharmacy.is_24h) {
-        markerColor = '#31c2a7' // green for 24/7
+        markerColor = '#027d12' // very dark green for 24/7
       } else if (pharmacy.open_sunday) {
-        markerColor = '#f08c1a' // orange for Sunday open
+        markerColor = '#d51a03' // very dark brown-orange for Sunday open
       }
 
-      // Create marker element
+      // Create container for pulsing effect
+      const markerContainer = document.createElement('div')
+      markerContainer.style.position = 'relative'
+      markerContainer.style.width = '30px'
+      markerContainer.style.height = '30px'
+      markerContainer.style.display = 'flex'
+      markerContainer.style.alignItems = 'center'
+      markerContainer.style.justifyContent = 'center'
+      markerContainer.style.cursor = 'pointer'
+
+      // Add CSS animation styles to the document if not already added
+      if (!document.getElementById('pharmacy-marker-styles')) {
+        const styleSheet = document.createElement('style')
+        styleSheet.id = 'pharmacy-marker-styles'
+        styleSheet.innerHTML = `
+          @keyframes pulse-ring {
+            0% {
+              transform: scale(0.3);
+              opacity: 1;
+            }
+            40% {
+              transform: scale(0.7);
+              opacity: 0.6;
+            }
+            100% {
+              transform: scale(1);
+              opacity: 0;
+            }
+          }
+          @keyframes marker-bounce {
+            0%, 100% {
+              transform: rotate(45deg) scale(1) translateY(0);
+            }
+            25% {
+              transform: rotate(45deg) scale(1.3) translateY(-2px);
+            }
+            50% {
+              transform: rotate(45deg) scale(1.1) translateY(0);
+            }
+            75% {
+              transform: rotate(45deg) scale(1.25) translateY(-1px);
+            }
+          }
+          @keyframes marker-glow {
+            0%, 100% {
+              box-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px currentColor, 0 0 30px currentColor;
+            }
+            50% {
+              box-shadow: 0 0 20px rgba(255,255,255,1), 0 0 40px currentColor, 0 0 50px currentColor;
+            }
+          }
+        `
+        document.head.appendChild(styleSheet)
+      }
+
+      // Create pulsing ring
+      const pulseRing = document.createElement('div')
+      pulseRing.style.position = 'absolute'
+      pulseRing.style.width = '15px'
+      pulseRing.style.height = '15px'
+      pulseRing.style.backgroundColor = markerColor
+      pulseRing.style.opacity = '0.7'
+      pulseRing.style.borderRadius = '50%'
+      pulseRing.style.animation = 'pulse-ring 1.5s infinite ease-out'
+      pulseRing.style.border = `2px solid ${markerColor}`
+      markerContainer.appendChild(pulseRing)
+
+      // Create second pulsing ring with delay
+      const pulseRing2 = document.createElement('div')
+      pulseRing2.style.position = 'absolute'
+      pulseRing2.style.width = '15px'
+      pulseRing2.style.height = '15px'
+      pulseRing2.style.backgroundColor = markerColor
+      pulseRing2.style.opacity = '0.7'
+      pulseRing2.style.borderRadius = '50%'
+      pulseRing2.style.animation = 'pulse-ring 1.5s infinite ease-out'
+      pulseRing2.style.animationDelay = '0.5s'
+      pulseRing2.style.border = `2px solid ${markerColor}`
+      markerContainer.appendChild(pulseRing2)
+
+      // Create third pulsing ring for more activity
+      const pulseRing3 = document.createElement('div')
+      pulseRing3.style.position = 'absolute'
+      pulseRing3.style.width = '15px'
+      pulseRing3.style.height = '15px'
+      pulseRing3.style.backgroundColor = markerColor
+      pulseRing3.style.opacity = '0.7'
+      pulseRing3.style.borderRadius = '50%'
+      pulseRing3.style.animation = 'pulse-ring 1.5s infinite ease-out'
+      pulseRing3.style.animationDelay = '1s'
+      pulseRing3.style.border = `2px solid ${markerColor}`
+      markerContainer.appendChild(pulseRing3)
+
+      // Create marker element with pharmacy cross shape
       const markerElement = document.createElement('div')
-      markerElement.style.width = '16px'
-      markerElement.style.height = '16px'
-      markerElement.style.borderRadius = '50%'
+      markerElement.style.width = '14px'
+      markerElement.style.height = '14px'
       markerElement.style.backgroundColor = markerColor
-      markerElement.style.border = '2px solid white'
-      markerElement.style.cursor = 'pointer'
-      markerElement.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)'
+      markerElement.style.border = `2px solid ${borderColor}`
+      markerElement.style.position = 'absolute'
+      markerElement.style.borderRadius = '3px'
+      markerElement.style.transform = 'rotate(45deg)'
+      markerElement.style.zIndex = '2'
+      markerElement.style.animation = 'marker-bounce 1.2s infinite ease-in-out, marker-glow 2s infinite ease-in-out'
+      markerElement.style.filter = `drop-shadow(0 0 5px ${markerColor}) drop-shadow(0 0 10px ${markerColor})`
+
+      // Add pharmacy cross icon
+      const crossIcon = document.createElement('div')
+      crossIcon.innerHTML = '+'
+      crossIcon.style.color = iconColor
+      crossIcon.style.fontSize = '10px'
+      crossIcon.style.fontWeight = '900'
+      crossIcon.style.position = 'absolute'
+      crossIcon.style.top = '50%'
+      crossIcon.style.left = '50%'
+      crossIcon.style.transform = 'translate(-50%, -50%) rotate(-45deg)'
+      crossIcon.style.lineHeight = '1'
+      crossIcon.style.textShadow = `0 0 5px rgba(255,255,255,0.8), 0 0 10px rgba(255,255,255,0.6)`
+      markerElement.appendChild(crossIcon)
+
+      markerContainer.appendChild(markerElement)
 
       const marker = new google.maps.marker.AdvancedMarkerElement({
         position,
         map: mapInstanceRef.current,
         title: language === 'me' ? pharmacy.name_me : (pharmacy.name_en || pharmacy.name_me),
-        content: markerElement
+        content: markerContainer
       })
 
       // Create info window
