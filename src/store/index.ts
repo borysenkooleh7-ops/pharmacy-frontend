@@ -11,10 +11,10 @@ export const store = configureStore({
   reducer: {
     pharmacy: pharmacySlice,
     ui: uiSlice,
-    ads: adSlice,
+    ads: adSlice, // Public ads for display
     adminPharmacies: pharmaciesSlice,
     adminMedicines: medicinesSlice,
-    adminAds: adsSlice,
+    adminAds: adsSlice, // Admin ads management
     adminSubmissions: submissionsSlice,
   },
   middleware: (getDefaultMiddleware) =>

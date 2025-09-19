@@ -21,9 +21,18 @@ export default function SubmissionsAdmin({ onMessage }: SubmissionsAdminProps): 
     dispatch(fetchSubmissions({ page: currentPage, limit: pageSize }))
   }, [dispatch, currentPage, pageSize])
 
-  const handleUpdateStatus = async (id: number, status: 'approved' | 'rejected' | 'reviewed') => {
-    await dispatch(updateSubmissionStatus({ id, status }))
-    onMessage(`Submission ${status} successfully`)
+  const handleUpdateStatus = async (id: number, status: 'approved' | 'rejected' | 'reviewed', submission?: PharmacySubmission) => {
+    let updateData: any = { id, status }
+
+    // When approving, include pharmacy_data for backend to create the pharmacy
+    if (status === 'approved' && submission) {
+      updateData.pharmacy_data = {
+        name_en: submission.name_en
+      }
+    }
+
+    await dispatch(updateSubmissionStatus(updateData))
+    onMessage(`Submission ${status} successfully${status === 'approved' ? ' and pharmacy created' : ''}`)
   }
 
   const handleDeleteItem = async (id: number) => {
@@ -164,19 +173,19 @@ export default function SubmissionsAdmin({ onMessage }: SubmissionsAdminProps): 
                       {submission.status === 'received' && (
                         <>
                           <button
-                            onClick={() => handleUpdateStatus(submission.id, 'approved')}
+                            onClick={() => handleUpdateStatus(submission.id, 'approved', submission)}
                             className="text-green-600 hover:text-green-900 text-xs px-2 py-1 rounded hover:bg-green-50"
                           >
                             ✅ Approve
                           </button>
                           <button
-                            onClick={() => handleUpdateStatus(submission.id, 'rejected')}
+                            onClick={() => handleUpdateStatus(submission.id, 'rejected', submission)}
                             className="text-red-600 hover:text-red-900 text-xs px-2 py-1 rounded hover:bg-red-50"
                           >
                             ❌ Reject
                           </button>
                           <button
-                            onClick={() => handleUpdateStatus(submission.id, 'reviewed')}
+                            onClick={() => handleUpdateStatus(submission.id, 'reviewed', submission)}
                             className="text-yellow-600 hover:text-yellow-900 text-xs px-2 py-1 rounded hover:bg-yellow-50"
                           >
                             👁️ Review
@@ -338,7 +347,7 @@ export default function SubmissionsAdmin({ onMessage }: SubmissionsAdminProps): 
               <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
                 <button
                   onClick={() => {
-                    handleUpdateStatus(viewingSubmission.id, 'approved')
+                    handleUpdateStatus(viewingSubmission.id, 'approved', viewingSubmission)
                     setViewingSubmission(null)
                   }}
                   className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
@@ -347,7 +356,7 @@ export default function SubmissionsAdmin({ onMessage }: SubmissionsAdminProps): 
                 </button>
                 <button
                   onClick={() => {
-                    handleUpdateStatus(viewingSubmission.id, 'rejected')
+                    handleUpdateStatus(viewingSubmission.id, 'rejected', viewingSubmission)
                     setViewingSubmission(null)
                   }}
                   className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
@@ -356,7 +365,7 @@ export default function SubmissionsAdmin({ onMessage }: SubmissionsAdminProps): 
                 </button>
                 <button
                   onClick={() => {
-                    handleUpdateStatus(viewingSubmission.id, 'reviewed')
+                    handleUpdateStatus(viewingSubmission.id, 'reviewed', viewingSubmission)
                     setViewingSubmission(null)
                   }}
                   className="px-4 py-2 text-sm font-medium text-white bg-yellow-600 border border-transparent rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"

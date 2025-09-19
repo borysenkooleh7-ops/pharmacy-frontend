@@ -1,21 +1,19 @@
 import { useState, useEffect } from 'react'
-import { submitPharmacy, clearSubmissionSuccess, clearError } from '../store/pharmacySlice'
+import { apiService } from '../config/api'
 import { useTranslation } from '../translations'
-import { useAppDispatch, useAppSelector } from '../hooks/redux'
+import { useAppSelector } from '../hooks/redux'
 import LoadingSpinner from './ui/LoadingSpinner'
 import ErrorMessage from './ui/ErrorMessage'
 
 export default function PharmacySubmissionForm(): React.JSX.Element {
-  const dispatch = useAppDispatch()
   const { language } = useAppSelector(state => state.ui)
-  const {
-    cities,
-    selectedCity,
-    loading,
-    error,
-    submissionSuccess
-  } = useAppSelector(state => state.pharmacy)
+  const { cities, selectedCity } = useAppSelector(state => state.pharmacy)
   const t = useTranslation(language)
+
+  // Local state for submission
+  const [submissionLoading, setSubmissionLoading] = useState(false)
+  const [submissionError, setSubmissionError] = useState<string | null>(null)
+  const [submissionSuccess, setSubmissionSuccess] = useState(false)
 
   const [formData, setFormData] = useState({
     name_me: '',
@@ -67,11 +65,11 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
       })
       // Clear success message after 5 seconds
       const timeout = setTimeout(() => {
-        dispatch(clearSubmissionSuccess())
+        setSubmissionSuccess(false)
       }, 5000)
       return () => clearTimeout(timeout)
     }
-  }, [submissionSuccess, selectedCity, dispatch])
+  }, [submissionSuccess, selectedCity])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target
@@ -86,12 +84,24 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
     e.preventDefault()
 
     // Clear any previous errors
-    if (error.submission) {
-      dispatch(clearError('submission'))
-    }
+    setSubmissionError(null)
+    setSubmissionLoading(true)
 
-    // Dispatch the submission
-    dispatch(submitPharmacy(formData))
+    try {
+      // Convert lat/lng to numbers
+      const submissionData = {
+        ...formData,
+        lat: parseFloat(formData.lat) || 0,
+        lng: parseFloat(formData.lng) || 0
+      }
+
+      await apiService.createSubmission(submissionData)
+      setSubmissionSuccess(true)
+    } catch (error: any) {
+      setSubmissionError(error.message || 'Failed to submit pharmacy')
+    } finally {
+      setSubmissionLoading(false)
+    }
   }
 
   return (
@@ -134,10 +144,10 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
         )}
 
         {/* Error Message */}
-        {error.submission && (
+        {submissionError && (
           <ErrorMessage
-            error={error.submission}
-            onRetry={() => dispatch(clearError('submission'))}
+            error={submissionError}
+            onRetry={() => setSubmissionError(null)}
             className="mb-6"
           />
         )}
@@ -404,10 +414,10 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
           <div className="pt-6 border-t border-gray-200">
             <button
               type="submit"
-              disabled={loading.submission}
+              disabled={submissionLoading}
               className="w-full sm:w-auto px-8 py-4 bg-primary hover:bg-primary-hover active:bg-primary-active text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95"
             >
-              {loading.submission ? (
+              {submissionLoading ? (
                 <span className="flex items-center justify-center">
                   <LoadingSpinner size="sm" className="mr-3" />
                   {language === 'me' ? 'Submitting...' : 'Submitting...'}

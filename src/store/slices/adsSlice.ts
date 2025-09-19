@@ -27,14 +27,14 @@ const initialState: AdsState = {
 
 // Async thunks
 export const fetchAds = createAsyncThunk(
-  'ads/fetchAds',
+  'adminAds/fetchAds',
   async (params: PaginationParams = API_CONFIG.DEFAULT_PAGINATION) => {
     return await apiService.fetchPaginated<Ad>('/ads/all', params)
   }
 )
 
 export const createAd = createAsyncThunk(
-  'ads/createAd',
+  'adminAds/createAd',
   async (adData: Omit<Ad, 'id' | 'createdAt' | 'updatedAt' | 'click_count' | 'impression_count'>) => {
     const data = await apiService.create<Ad>('/ads', adData)
     return data.data
@@ -42,7 +42,7 @@ export const createAd = createAsyncThunk(
 )
 
 export const updateAd = createAsyncThunk(
-  'ads/updateAd',
+  'adminAds/updateAd',
   async ({ id, ...adData }: Partial<Ad> & { id: number }) => {
     const data = await apiService.update<Ad>('/ads', id, adData)
     return data.data
@@ -50,7 +50,7 @@ export const updateAd = createAsyncThunk(
 )
 
 export const deleteAd = createAsyncThunk(
-  'ads/deleteAd',
+  'adminAds/deleteAd',
   async (id: number) => {
     await apiService.delete('/ads', id)
     return id
@@ -58,7 +58,7 @@ export const deleteAd = createAsyncThunk(
 )
 
 const adsSlice = createSlice({
-  name: 'ads',
+  name: 'adminAds',
   initialState,
   reducers: {
     setSelectedAd: (state, action: PayloadAction<Ad | null>) => {
