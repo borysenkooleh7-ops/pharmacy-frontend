@@ -9,9 +9,9 @@
   --color-primary-lighter: #DBEAFE;
   --color-primary-dark: #1E40AF;
 
-  --color-secondary: #EC4899;
-  --color-secondary-light: #F9A8D4;
-  --color-secondary-dark: #BE185D;
+  --color-secondary: #D946EF;
+  --color-secondary-light: #F0ABFC;
+  --color-secondary-dark: #A21CAF;
 
   --color-success: #10B981;
   --color-success-hover: #059669;
@@ -52,8 +52,8 @@
 
   --color-interactive-primary: #3B82F6;
   --color-interactive-primary-hover: #2563EB;
-  --color-interactive-secondary: #EC4899;
-  --color-interactive-secondary-hover: #BE185D;
+  --color-interactive-secondary: #D946EF;
+  --color-interactive-secondary-hover: #A21CAF;
   --color-interactive-success: #10B981;
   --color-interactive-success-hover: #059669;
   --color-interactive-warning: #F59E0B;
