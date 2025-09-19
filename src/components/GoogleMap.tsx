@@ -91,6 +91,7 @@ export default function GoogleMap(): React.JSX.Element {
         }
       })
 
+      // Update markers after map is initialized, even if pharmacies array is currently empty
       updateMarkers()
     } catch (error) {
       console.error('Error loading Google Maps:', error)
@@ -331,9 +332,9 @@ export default function GoogleMap(): React.JSX.Element {
   }
 
   useEffect(() => {
-    // Add a small delay to ensure DOM is ready
+    // Add a small delay to ensure DOM is ready and wait for selected city
     const initTimer = setTimeout(() => {
-      if (mapRef.current && GOOGLE_MAPS_API_KEY) {
+      if (mapRef.current && GOOGLE_MAPS_API_KEY && selectedCity) {
         initializeMap()
       }
     }, 100)
@@ -345,13 +346,22 @@ export default function GoogleMap(): React.JSX.Element {
       })
       markersRef.current = []
     }
-  }, [])
+  }, [selectedCity, pharmacies])
 
   useEffect(() => {
     if (mapInstanceRef.current) {
+      // Always update markers when pharmacies data changes, even if empty
       updateMarkers()
     }
   }, [pharmacies, language])
+
+  // Additional effect to handle the case where map initializes before pharmacy data loads
+  useEffect(() => {
+    if (mapInstanceRef.current && pharmacies.length > 0) {
+      // Update markers when pharmacies become available after map initialization
+      updateMarkers()
+    }
+  }, [pharmacies.length])
 
   useEffect(() => {
     if (mapInstanceRef.current && selectedCity) {
