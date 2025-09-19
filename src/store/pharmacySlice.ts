@@ -1,13 +1,30 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import { apiService } from '../services/api'
+import { apiService } from '../config/api'
 import type {
   Pharmacy,
   City,
-  Medicine,
-  PharmacySubmissionData,
-  UserLocation,
-  SearchType
-} from '@/types'
+  Medicine
+} from './slices/types'
+
+type SearchType = 'pharmacy' | 'medicine'
+
+interface PharmacySubmissionData {
+  name_me: string
+  name_en?: string
+  address: string
+  city_slug: string
+  email: string
+  phone?: string
+  website?: string
+  lat: number
+  lng: number
+  hours_monfri: string
+  hours_sat: string
+  hours_sun: string
+  is_24h: boolean
+  open_sunday: boolean
+  notes?: string
+}
 
 interface PharmacyFilters {
   is24h: boolean

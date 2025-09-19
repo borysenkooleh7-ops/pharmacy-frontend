@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useAppDispatch, useAppSelector } from '../hooks/redux'
 import { Loader } from '@googlemaps/js-api-loader'
 import { setSelectedPharmacy } from '../store/pharmacySlice'
-import type { Pharmacy } from '@/types'
+import type { Pharmacy } from '../store/slices/types'
 
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 

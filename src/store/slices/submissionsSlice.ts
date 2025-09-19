@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { PharmacySubmission, ApiResponse, PaginatedResponse, PaginationParams, PaginationState } from './types'
+import { apiService, API_CONFIG } from '../../config/api'
 
 interface SubmissionsState {
   submissions: PharmacySubmission[]
@@ -15,34 +16,20 @@ const initialState: SubmissionsState = {
   error: null,
   selectedSubmission: null,
   pagination: {
-    currentPage: 1,
+    currentPage: API_CONFIG.DEFAULT_PAGINATION.page,
     totalPages: 1,
     totalItems: 0,
-    itemsPerPage: 20,
+    itemsPerPage: API_CONFIG.DEFAULT_PAGINATION.limit,
     hasNextPage: false,
     hasPrevPage: false,
   },
 }
 
-const API_BASE = 'http://localhost:5000/api'
-const ADMIN_KEY = 'admin123'
-
 // Async thunks
 export const fetchSubmissions = createAsyncThunk(
   'submissions/fetchSubmissions',
-  async (params: PaginationParams = { page: 1, limit: 20 }) => {
-    const searchParams = new URLSearchParams({
-      page: params.page.toString(),
-      limit: params.limit.toString(),
-    })
-    const response = await fetch(`${API_BASE}/pharmacy-submissions?${searchParams}`, {
-      headers: {
-        'x-admin-key': ADMIN_KEY,
-      },
-    })
-    const data: PaginatedResponse<PharmacySubmission> = await response.json()
-    if (!data.success) throw new Error(data.message)
-    return data
+  async (params: PaginationParams = API_CONFIG.DEFAULT_PAGINATION) => {
+    return await apiService.fetchPaginated<PharmacySubmission>('/pharmacy-submissions', params)
   }
 )
 
@@ -54,31 +41,14 @@ export const updateSubmissionStatus = createAsyncThunk(
     review_notes?: string
     pharmacy_data?: any
   }) => {
-    const response = await fetch(`${API_BASE}/pharmacy-submissions/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-admin-key': ADMIN_KEY,
-      },
-      body: JSON.stringify({ status, review_notes, pharmacy_data }),
-    })
-    const data: ApiResponse<PharmacySubmission> = await response.json()
-    if (!data.success) throw new Error(data.message)
-    return data.data
+    return await apiService.updateSubmissionStatus(id, status, review_notes, pharmacy_data)
   }
 )
 
 export const deleteSubmission = createAsyncThunk(
   'submissions/deleteSubmission',
   async (id: number) => {
-    const response = await fetch(`${API_BASE}/pharmacy-submissions/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'x-admin-key': ADMIN_KEY,
-      },
-    })
-    const data: ApiResponse<null> = await response.json()
-    if (!data.success) throw new Error(data.message)
+    await apiService.delete('/pharmacy-submissions', id)
     return id
   }
 )

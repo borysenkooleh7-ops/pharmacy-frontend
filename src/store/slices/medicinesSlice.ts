@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { Medicine, ApiResponse, PaginatedResponse, PaginationParams, PaginationState } from './types'
+import { apiService, API_CONFIG } from '../../config/api'
 
 interface MedicinesState {
   medicines: Medicine[]
@@ -15,50 +16,27 @@ const initialState: MedicinesState = {
   error: null,
   selectedMedicine: null,
   pagination: {
-    currentPage: 1,
+    currentPage: API_CONFIG.DEFAULT_PAGINATION.page,
     totalPages: 1,
     totalItems: 0,
-    itemsPerPage: 20,
+    itemsPerPage: API_CONFIG.DEFAULT_PAGINATION.limit,
     hasNextPage: false,
     hasPrevPage: false,
   },
 }
 
-const API_BASE = 'http://localhost:5000/api'
-const ADMIN_KEY = 'admin123'
-
 // Async thunks
 export const fetchMedicines = createAsyncThunk(
   'medicines/fetchMedicines',
-  async (params: PaginationParams = { page: 1, limit: 20 }) => {
-    const searchParams = new URLSearchParams({
-      page: params.page.toString(),
-      limit: params.limit.toString(),
-    })
-    const response = await fetch(`${API_BASE}/medicines?${searchParams}`, {
-      headers: {
-        'x-admin-key': ADMIN_KEY,
-      },
-    })
-    const data: PaginatedResponse<Medicine> = await response.json()
-    if (!data.success) throw new Error(data.message)
-    return data
+  async (params: PaginationParams = API_CONFIG.DEFAULT_PAGINATION) => {
+    return await apiService.fetchPaginated<Medicine>('/medicines', params)
   }
 )
 
 export const createMedicine = createAsyncThunk(
   'medicines/createMedicine',
   async (medicineData: Omit<Medicine, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const response = await fetch(`${API_BASE}/medicines`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-admin-key': ADMIN_KEY,
-      },
-      body: JSON.stringify(medicineData),
-    })
-    const data: ApiResponse<Medicine> = await response.json()
-    if (!data.success) throw new Error(data.message)
+    const data = await apiService.create<Medicine>('/medicines', medicineData)
     return data.data
   }
 )
@@ -66,16 +44,7 @@ export const createMedicine = createAsyncThunk(
 export const updateMedicine = createAsyncThunk(
   'medicines/updateMedicine',
   async ({ id, ...medicineData }: Partial<Medicine> & { id: number }) => {
-    const response = await fetch(`${API_BASE}/medicines/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-admin-key': ADMIN_KEY,
-      },
-      body: JSON.stringify(medicineData),
-    })
-    const data: ApiResponse<Medicine> = await response.json()
-    if (!data.success) throw new Error(data.message)
+    const data = await apiService.update<Medicine>('/medicines', id, medicineData)
     return data.data
   }
 )
@@ -83,14 +52,7 @@ export const updateMedicine = createAsyncThunk(
 export const deleteMedicine = createAsyncThunk(
   'medicines/deleteMedicine',
   async (id: number) => {
-    const response = await fetch(`${API_BASE}/medicines/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'x-admin-key': ADMIN_KEY,
-      },
-    })
-    const data: ApiResponse<null> = await response.json()
-    if (!data.success) throw new Error(data.message)
+    await apiService.delete('/medicines', id)
     return id
   }
 )

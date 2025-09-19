@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { apiService } from '../services/api'
-import type { Ad } from '@/types'
+import { apiService } from '../config/api'
+import type { Ad } from './slices/types'
 
 interface AdState {
   ads: Ad[]

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { Ad, ApiResponse, PaginatedResponse, PaginationParams, PaginationState } from './types'
+import { apiService, API_CONFIG } from '../../config/api'
 
 interface AdsState {
   ads: Ad[]
@@ -15,50 +16,27 @@ const initialState: AdsState = {
   error: null,
   selectedAd: null,
   pagination: {
-    currentPage: 1,
+    currentPage: API_CONFIG.DEFAULT_PAGINATION.page,
     totalPages: 1,
     totalItems: 0,
-    itemsPerPage: 20,
+    itemsPerPage: API_CONFIG.DEFAULT_PAGINATION.limit,
     hasNextPage: false,
     hasPrevPage: false,
   },
 }
 
-const API_BASE = 'http://localhost:5000/api'
-const ADMIN_KEY = 'admin123'
-
 // Async thunks
 export const fetchAds = createAsyncThunk(
   'ads/fetchAds',
-  async (params: PaginationParams = { page: 1, limit: 20 }) => {
-    const searchParams = new URLSearchParams({
-      page: params.page.toString(),
-      limit: params.limit.toString(),
-    })
-    const response = await fetch(`${API_BASE}/ads/all?${searchParams}`, {
-      headers: {
-        'x-admin-key': ADMIN_KEY,
-      },
-    })
-    const data: PaginatedResponse<Ad> = await response.json()
-    if (!data.success) throw new Error(data.message)
-    return data
+  async (params: PaginationParams = API_CONFIG.DEFAULT_PAGINATION) => {
+    return await apiService.fetchPaginated<Ad>('/ads/all', params)
   }
 )
 
 export const createAd = createAsyncThunk(
   'ads/createAd',
   async (adData: Omit<Ad, 'id' | 'createdAt' | 'updatedAt' | 'click_count' | 'impression_count'>) => {
-    const response = await fetch(`${API_BASE}/ads`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-admin-key': ADMIN_KEY,
-      },
-      body: JSON.stringify(adData),
-    })
-    const data: ApiResponse<Ad> = await response.json()
-    if (!data.success) throw new Error(data.message)
+    const data = await apiService.create<Ad>('/ads', adData)
     return data.data
   }
 )
@@ -66,16 +44,7 @@ export const createAd = createAsyncThunk(
 export const updateAd = createAsyncThunk(
   'ads/updateAd',
   async ({ id, ...adData }: Partial<Ad> & { id: number }) => {
-    const response = await fetch(`${API_BASE}/ads/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-admin-key': ADMIN_KEY,
-      },
-      body: JSON.stringify(adData),
-    })
-    const data: ApiResponse<Ad> = await response.json()
-    if (!data.success) throw new Error(data.message)
+    const data = await apiService.update<Ad>('/ads', id, adData)
     return data.data
   }
 )
@@ -83,14 +52,7 @@ export const updateAd = createAsyncThunk(
 export const deleteAd = createAsyncThunk(
   'ads/deleteAd',
   async (id: number) => {
-    const response = await fetch(`${API_BASE}/ads/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'x-admin-key': ADMIN_KEY,
-      },
-    })
-    const data: ApiResponse<null> = await response.json()
-    if (!data.success) throw new Error(data.message)
+    await apiService.delete('/ads', id)
     return id
   }
 )
