@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import { useAppDispatch } from '../../hooks/redux'
-import { fetchCities } from '../../store/pharmacySlice'
+import { useAppDispatch, useAppSelector } from '../../hooks/redux'
+import { fetchCities, setSelectedCity } from '../../store/pharmacySlice'
 import { fetchActiveAds } from '../../store/adSlice'
 import Header from './Header'
 import ErrorBoundary from '../ui/ErrorBoundary'
@@ -11,12 +11,27 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps): React.JSX.Element {
   const dispatch = useAppDispatch()
+  const { cities, selectedCity } = useAppSelector(state => state.pharmacy)
 
+  // Load initial data
   useEffect(() => {
-    // Load initial data
     dispatch(fetchCities())
     dispatch(fetchActiveAds())
   }, [dispatch])
+
+  // Set default city to Podgorica when cities are loaded
+  useEffect(() => {
+    if (cities.length > 0 && !selectedCity) {
+      // Find Podgorica (should be default according to requirements)
+      const podgorica = cities.find(city => city.slug === 'podgorica')
+      if (podgorica) {
+        dispatch(setSelectedCity(podgorica))
+      } else {
+        // Fallback to first city if Podgorica not found
+        dispatch(setSelectedCity(cities[0]))
+      }
+    }
+  }, [cities, selectedCity, dispatch])
 
   return (
     <ErrorBoundary>
