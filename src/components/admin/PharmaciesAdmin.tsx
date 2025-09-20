@@ -25,11 +25,14 @@ export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): Re
   }, [dispatch, currentPage, pageSize])
 
   const handleCreateItem = async (data: any) => {
-    await dispatch(createPharmacy(data))
-    setShowCreateForm(false)
-    // Refresh current page to show new item
-    dispatch(fetchPharmacies({ page: currentPage, limit: pageSize }))
-    onMessage('Pharmacy created successfully')
+    try {
+      await dispatch(createPharmacy(data)).unwrap()
+      setShowCreateForm(false)
+      // Redux slice automatically adds the new pharmacy to state, no need to refetch
+      onMessage('Pharmacy created successfully')
+    } catch (error: any) {
+      onMessage(`Failed to create pharmacy: ${error.message || 'Unknown error'}`)
+    }
   }
 
   const handleUpdateItem = async (data: any) => {
@@ -44,14 +47,17 @@ export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): Re
 
   const handleDeleteItem = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this pharmacy?')) {
-      await dispatch(deletePharmacy(id))
-      // If current page becomes empty, go to previous page
-      if (pharmacies.length === 1 && currentPage > 1) {
-        setCurrentPage(currentPage - 1)
-      } else {
-        dispatch(fetchPharmacies({ page: currentPage, limit: pageSize }))
+      try {
+        await dispatch(deletePharmacy(id)).unwrap()
+        // Redux slice automatically removes the pharmacy from state and updates pagination
+        // If current page becomes empty, go to previous page
+        if (pharmacies.length === 1 && currentPage > 1) {
+          setCurrentPage(currentPage - 1)
+        }
+        onMessage('Pharmacy deleted successfully')
+      } catch (error: any) {
+        onMessage(`Failed to delete pharmacy: ${error.message || 'Unknown error'}`)
       }
-      onMessage('Pharmacy deleted successfully')
     }
   }
 

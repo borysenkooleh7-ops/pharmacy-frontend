@@ -40,17 +40,25 @@ export const updateSubmissionStatus = createAsyncThunk(
     status: 'approved' | 'rejected' | 'reviewed'
     review_notes?: string
     pharmacy_data?: any
-  }) => {
-    return await apiService.updateSubmissionStatus(id, status, review_notes, pharmacy_data)
+  }, { rejectWithValue }) => {
+    try {
+      return await apiService.updateSubmissionStatus(id, status, review_notes, pharmacy_data)
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to update submission status')
+    }
   }
 )
  
 
 export const deleteSubmission = createAsyncThunk(
   'submissions/deleteSubmission',
-  async (id: number) => {
-    await apiService.delete('/pharmacy-submissions', id)
-    return id
+  async (id: number, { rejectWithValue }) => {
+    try {
+      await apiService.delete('/pharmacy-submissions', id)
+      return id
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to delete submission')
+    }
   }
 )
 
@@ -105,7 +113,7 @@ const submissionsSlice = createSlice({
       })
       .addCase(updateSubmissionStatus.rejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message || 'Failed to update submission'
+        state.error = action.payload as string || action.error.message || 'Failed to update submission'
       })
       // Delete submission
       .addCase(deleteSubmission.pending, (state) => {
@@ -123,7 +131,7 @@ const submissionsSlice = createSlice({
       })
       .addCase(deleteSubmission.rejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message || 'Failed to delete submission'
+        state.error = action.payload as string || action.error.message || 'Failed to delete submission'
       })
   },
 })

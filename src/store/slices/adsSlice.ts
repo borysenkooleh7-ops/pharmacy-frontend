@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import { Ad, ApiResponse, PaginatedResponse, PaginationParams, PaginationState } from './types'
+import { Ad, PaginationParams, PaginationState } from './types'
 import { apiService, API_CONFIG } from '../../config/api'
 
 interface AdsState {
@@ -35,25 +35,37 @@ export const fetchAds = createAsyncThunk(
 
 export const createAd = createAsyncThunk(
   'adminAds/createAd',
-  async (adData: Omit<Ad, 'id' | 'createdAt' | 'updatedAt' | 'click_count' | 'impression_count'>) => {
-    const data = await apiService.create<Ad>('/ads', adData)
-    return data.data
+  async (adData: Omit<Ad, 'id' | 'createdAt' | 'updatedAt' | 'click_count' | 'impression_count'>, { rejectWithValue }) => {
+    try {
+      const data = await apiService.create<Ad>('/ads', adData)
+      return data.data
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to create ad')
+    }
   }
 )
 
 export const updateAd = createAsyncThunk(
   'adminAds/updateAd',
-  async ({ id, ...adData }: Partial<Ad> & { id: number }) => {
-    const data = await apiService.update<Ad>('/ads', id, adData)
-    return data.data
+  async ({ id, ...adData }: Partial<Ad> & { id: number }, { rejectWithValue }) => {
+    try {
+      const data = await apiService.update<Ad>('/ads', id, adData)
+      return data.data
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to update ad')
+    }
   }
 )
 
 export const deleteAd = createAsyncThunk(
   'adminAds/deleteAd',
-  async (id: number) => {
-    await apiService.delete('/ads', id)
-    return id
+  async (id: number, { rejectWithValue }) => {
+    try {
+      await apiService.delete('/ads', id)
+      return id
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to delete ad')
+    }
   }
 )
 
@@ -98,11 +110,13 @@ const adsSlice = createSlice({
       })
       .addCase(createAd.fulfilled, (state, action) => {
         state.loading = false
-        state.ads.push(action.payload)
+        state.ads.unshift(action.payload) // Add to beginning since backend sorts by most recent first
+        // Update pagination total
+        state.pagination.totalItems = state.pagination.totalItems + 1
       })
       .addCase(createAd.rejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message || 'Failed to create ad'
+        state.error = action.payload as string || action.error.message || 'Failed to create ad'
       })
       // Update ad
       .addCase(updateAd.pending, (state) => {
@@ -121,7 +135,7 @@ const adsSlice = createSlice({
       })
       .addCase(updateAd.rejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message || 'Failed to update ad'
+        state.error = action.payload as string || action.error.message || 'Failed to update ad'
       })
       // Delete ad
       .addCase(deleteAd.pending, (state) => {
@@ -139,7 +153,7 @@ const adsSlice = createSlice({
       })
       .addCase(deleteAd.rejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message || 'Failed to delete ad'
+        state.error = action.payload as string || action.error.message || 'Failed to delete ad'
       })
   },
 })

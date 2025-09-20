@@ -35,25 +35,37 @@ export const fetchPharmacies = createAsyncThunk(
 
 export const createPharmacy = createAsyncThunk(
   'pharmacies/createPharmacy',
-  async (pharmacyData: Omit<Pharmacy, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const data = await apiService.create<Pharmacy>('/pharmacies', pharmacyData)
-    return data.data
+  async (pharmacyData: Omit<Pharmacy, 'id' | 'createdAt' | 'updatedAt'>, { rejectWithValue }) => {
+    try {
+      const data = await apiService.create<Pharmacy>('/pharmacies', pharmacyData)
+      return data.data
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to create pharmacy')
+    }
   }
 )
 
 export const updatePharmacy = createAsyncThunk(
   'pharmacies/updatePharmacy',
-  async ({ id, ...pharmacyData }: Partial<Pharmacy> & { id: number }) => {
-    const data = await apiService.update<Pharmacy>('/pharmacies', id, pharmacyData)
-    return data.data
+  async ({ id, ...pharmacyData }: Partial<Pharmacy> & { id: number }, { rejectWithValue }) => {
+    try {
+      const data = await apiService.update<Pharmacy>('/pharmacies', id, pharmacyData)
+      return data.data
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to update pharmacy')
+    }
   }
 )
 
 export const deletePharmacy = createAsyncThunk(
   'pharmacies/deletePharmacy',
-  async (id: number) => {
-    await apiService.delete('/pharmacies', id)
-    return id
+  async (id: number, { rejectWithValue }) => {
+    try {
+      await apiService.delete('/pharmacies', id)
+      return id
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to delete pharmacy')
+    }
   }
 )
 
@@ -102,7 +114,7 @@ const pharmaciesSlice = createSlice({
       })
       .addCase(createPharmacy.rejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message || 'Failed to create pharmacy'
+        state.error = action.payload as string || action.error.message || 'Failed to create pharmacy'
       })
       // Update pharmacy
       .addCase(updatePharmacy.pending, (state) => {
@@ -121,7 +133,7 @@ const pharmaciesSlice = createSlice({
       })
       .addCase(updatePharmacy.rejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message || 'Failed to update pharmacy'
+        state.error = action.payload as string || action.error.message || 'Failed to update pharmacy'
       })
       // Delete pharmacy
       .addCase(deletePharmacy.pending, (state) => {
@@ -139,7 +151,7 @@ const pharmaciesSlice = createSlice({
       })
       .addCase(deletePharmacy.rejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message || 'Failed to delete pharmacy'
+        state.error = action.payload as string || action.error.message || 'Failed to delete pharmacy'
       })
   },
 })

@@ -21,30 +21,41 @@ export default function SubmissionsAdmin({ onMessage }: SubmissionsAdminProps): 
     dispatch(fetchSubmissions({ page: currentPage, limit: pageSize }))
   }, [dispatch, currentPage, pageSize])
 
-  const handleUpdateStatus = async (id: number, status: 'approved' | 'rejected' | 'reviewed', submission?: PharmacySubmission) => {
-    let updateData: any = { id, status }
+  const handleUpdateStatus = async (id: number, status: 'approved' | 'rejected' | 'reviewed', submission?: PharmacySubmission, review_notes?: string) => {
+    try {
+      let updateData: any = { id, status }
 
-    // When approving, include pharmacy_data for backend to create the pharmacy
-    if (status === 'approved' && submission) {
-      updateData.pharmacy_data = {
-        name_en: submission.name_en
+      // Add review notes if provided
+      if (review_notes?.trim()) {
+        updateData.review_notes = review_notes.trim()
       }
-    }
 
-    await dispatch(updateSubmissionStatus(updateData))
-    onMessage(`Submission ${status} successfully${status === 'approved' ? ' and pharmacy created' : ''}`)
+      // When approving, include pharmacy_data for backend to create the pharmacy
+      if (status === 'approved' && submission) {
+        updateData.pharmacy_data = {
+          name_en: submission.name_en
+        }
+      }
+
+      await dispatch(updateSubmissionStatus(updateData)).unwrap()
+      onMessage(`Submission ${status} successfully${status === 'approved' ? ' and pharmacy created' : ''}`)
+    } catch (error: any) {
+      onMessage(`Failed to ${status} submission: ${error.message || error}`)
+    }
   }
 
   const handleDeleteItem = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this submission?')) {
-      await dispatch(deleteSubmission(id))
-      // If current page becomes empty, go to previous page
-      if (submissions.length === 1 && currentPage > 1) {
-        setCurrentPage(currentPage - 1)
-      } else {
-        dispatch(fetchSubmissions({ page: currentPage, limit: pageSize }))
+      try {
+        await dispatch(deleteSubmission(id)).unwrap()
+        // If current page becomes empty, go to previous page
+        if (submissions.length === 1 && currentPage > 1) {
+          setCurrentPage(currentPage - 1)
+        }
+        onMessage('Submission deleted successfully')
+      } catch (error: any) {
+        onMessage(`Failed to delete submission: ${error.message || error}`)
       }
-      onMessage('Submission deleted successfully')
     }
   }
 

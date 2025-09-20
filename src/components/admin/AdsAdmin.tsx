@@ -24,29 +24,40 @@ export default function AdsAdmin({ onMessage }: AdsAdminProps): React.JSX.Elemen
   }, [dispatch, currentPage, pageSize])
 
   const handleCreateItem = async (data: any) => {
-    await dispatch(createAd(data))
-    setShowCreateForm(false)
-    // Refresh current page to show new item
-    dispatch(fetchAds({ page: currentPage, limit: pageSize }))
-    onMessage('Advertisement created successfully')
+    try {
+      await dispatch(createAd(data)).unwrap()
+      setShowCreateForm(false)
+      onMessage('Advertisement created successfully')
+      // Redux slice automatically adds the new ad to state, no need to refetch
+    } catch (error: any) {
+      onMessage(`Failed to create advertisement: ${error.message}`)
+    }
   }
 
   const handleUpdateItem = async (data: any) => {
-    await dispatch(updateAd(data))
-    setEditingItem(null)
-    onMessage('Advertisement updated successfully')
+    try {
+      await dispatch(updateAd(data)).unwrap()
+      setEditingItem(null)
+      onMessage('Advertisement updated successfully')
+      // Redux slice automatically updates the ad in state for immediate UI update
+    } catch (error: any) {
+      onMessage(`Failed to update advertisement: ${error.message}`)
+    }
   }
 
   const handleDeleteItem = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this advertisement?')) {
-      await dispatch(deleteAd(id))
-      // If current page becomes empty, go to previous page
-      if (ads.length === 1 && currentPage > 1) {
-        setCurrentPage(currentPage - 1)
-      } else {
-        dispatch(fetchAds({ page: currentPage, limit: pageSize }))
+      try {
+        await dispatch(deleteAd(id)).unwrap()
+        // Redux slice automatically removes the ad from state and updates pagination
+        // If current page becomes empty, go to previous page
+        if (ads.length === 1 && currentPage > 1) {
+          setCurrentPage(currentPage - 1)
+        }
+        onMessage('Advertisement deleted successfully')
+      } catch (error: any) {
+        onMessage(`Failed to delete advertisement: ${error.message}`)
       }
-      onMessage('Advertisement deleted successfully')
     }
   }
 
@@ -69,12 +80,19 @@ export default function AdsAdmin({ onMessage }: AdsAdminProps): React.JSX.Elemen
     const formData = new FormData(e.target as HTMLFormElement)
     const isEditing = !!editingItem
 
+    // Validate weight range (0-10 to match backend constraint)
+    const weight = parseInt(formData.get('weight') as string) || 1
+    if (weight < 0 || weight > 10) {
+      onMessage('Weight must be between 0 and 10')
+      return
+    }
+
     const data = {
       ...(isEditing && { id: editingItem.id }),
       name: formData.get('name') as string,
       image_url: formData.get('image_url') as string,
       target_url: formData.get('target_url') as string,
-      weight: parseInt(formData.get('weight') as string) || 1,
+      weight,
       start_date: formData.get('start_date') as string,
       end_date: formData.get('end_date') as string,
       active: formData.get('active') === 'on'
@@ -222,10 +240,10 @@ export default function AdsAdmin({ onMessage }: AdsAdminProps): React.JSX.Elemen
               name="weight"
               type="number"
               defaultValue={editingItem?.weight?.toString() || '1'}
-              min={1}
-              max={100}
+              min={0}
+              max={10}
               placeholder="1"
-              helpText="Higher numbers = higher priority (1-100)"
+              helpText="Higher numbers = higher priority (0-10)"
             />
 
             <div className="md:col-span-2">
