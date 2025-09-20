@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAppSelector } from '../hooks/redux'
 import LoadingSpinner from './ui/LoadingSpinner'
-import type { Ad } from '@/types'
+import type { Ad } from '../store/slices/types'
 
 export default function AdvertisingBanner(): React.JSX.Element {
   const { ads, loading } = useAppSelector(state => state.ads)

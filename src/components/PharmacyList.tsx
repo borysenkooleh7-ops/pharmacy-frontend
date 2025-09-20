@@ -3,7 +3,7 @@ import { setSelectedPharmacy } from '../store/pharmacySlice'
 import { useTranslation } from '../translations'
 import LoadingSpinner from './ui/LoadingSpinner'
 import { SearchIcon, PhoneIcon, ClockIcon } from './ui/Icons'
-import type { Pharmacy } from '@/types'
+import type { Pharmacy } from '../store/slices/types'
 
 export default function PharmacyList(): React.JSX.Element {
   const dispatch = useAppDispatch()

@@ -34,6 +34,11 @@ export interface Medicine {
   active: boolean
   createdAt: string
   updatedAt: string
+  pharmacyMedicines?: Array<{
+    pharmacy_id: number
+    medicine_id: number
+    pharmacy?: Pharmacy
+  }>
 }
 
 export interface Ad {
@@ -81,8 +86,15 @@ export interface City {
   slug: string
   name_me: string
   name_en: string
+  latitude?: number
+  longitude?: number
   createdAt: string
   updatedAt: string
+}
+
+export interface UserLocation {
+  latitude: number
+  longitude: number
 }
 
 export interface ApiResponse<T> {

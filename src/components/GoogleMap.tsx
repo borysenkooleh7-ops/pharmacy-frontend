@@ -303,6 +303,14 @@ export default function GoogleMap(): React.JSX.Element {
         })
       })
       mapInstanceRef.current.fitBounds(bounds)
+
+      // Restore tilt after fitBounds() - fitBounds resets tilt to 0
+      setTimeout(() => {
+        const currentMapType = mapInstanceRef.current.getMapTypeId()
+        if (currentMapType === 'satellite' || currentMapType === 'hybrid') {
+          mapInstanceRef.current.setTilt(45)
+        }
+      }, 100)
     }
   }
 
@@ -367,6 +375,14 @@ export default function GoogleMap(): React.JSX.Element {
     if (mapInstanceRef.current && selectedCity) {
       const center = getCenterCoordinates()
       mapInstanceRef.current.setCenter(center)
+
+      // Preserve tilt when changing city
+      setTimeout(() => {
+        const currentMapType = mapInstanceRef.current.getMapTypeId()
+        if (currentMapType === 'satellite' || currentMapType === 'hybrid') {
+          mapInstanceRef.current.setTilt(45)
+        }
+      }, 100)
     }
   }, [selectedCity])
 
@@ -379,6 +395,14 @@ export default function GoogleMap(): React.JSX.Element {
       }
       mapInstanceRef.current.setCenter(position)
       mapInstanceRef.current.setZoom(15)
+
+      // Preserve tilt when focusing on pharmacy
+      setTimeout(() => {
+        const currentMapType = mapInstanceRef.current.getMapTypeId()
+        if (currentMapType === 'satellite' || currentMapType === 'hybrid') {
+          mapInstanceRef.current.setTilt(45)
+        }
+      }, 100)
 
       // Open the corresponding info window
       const markerData = markersRef.current.find(({ marker }: MarkerData) => {

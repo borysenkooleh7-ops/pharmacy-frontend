@@ -5,7 +5,7 @@ import { setUserLocation, setLoadingLocation } from '../store/uiSlice'
 import { useTranslation } from '../translations'
 import LoadingSpinner from './ui/LoadingSpinner'
 import { PharmacyIcon, MedicineIcon } from './ui/Icons'
-import type { Medicine, UserLocation } from '@/types'
+import type { Medicine, UserLocation } from '../store/slices/types'
 
 export default function SearchAndFilterSection(): React.JSX.Element {
   const dispatch = useAppDispatch()
