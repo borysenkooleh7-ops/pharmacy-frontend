@@ -88,11 +88,9 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
     setSubmissionLoading(true)
 
     try {
-      // Convert lat/lng to numbers
+      // Send form data as is without validation
       const submissionData = {
-        ...formData,
-        lat: parseFloat(formData.lat) || 0,
-        lng: parseFloat(formData.lng) || 0
+        ...formData
       }
 
       await apiService.createSubmission(submissionData)
@@ -156,7 +154,7 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="name_me" className="block text-sm font-semibold text-text-primary mb-3">
-                {t('pharmacyName')} (Montenegrin) <span className="text-danger">*</span>
+                {t('pharmacyName')} (Montenegrin)
               </label>
               <input
                 type="text"
@@ -164,7 +162,6 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
                 name="name_me"
                 value={formData.name_me}
                 onChange={handleChange}
-                required
                 placeholder="Naziv apoteke na crnogorskom"
                 className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
               />
@@ -188,7 +185,7 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
 
           <div>
             <label htmlFor="email" className="block text-sm font-semibold text-text-primary mb-3">
-              {t('pharmacyEmail')} <span className="text-danger">*</span>
+              {t('pharmacyEmail')}
             </label>
             <input
               type="email"
@@ -196,7 +193,6 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              required
               placeholder="contact@pharmacy.com"
               className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
             />
@@ -204,7 +200,7 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
 
           <div>
             <label htmlFor="address" className="block text-sm font-semibold text-text-primary mb-3">
-              {t('pharmacyAddress')} <span className="text-danger">*</span>
+              {t('pharmacyAddress')}
             </label>
             <input
               type="text"
@@ -212,7 +208,6 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
               name="address"
               value={formData.address}
               onChange={handleChange}
-              required
               placeholder="Enter complete address"
               className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
             />
@@ -257,14 +252,13 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="city_slug" className="block text-sm font-semibold text-text-primary mb-3">
-                City <span className="text-danger">*</span>
+                City
               </label>
               <select
                 id="city_slug"
                 name="city_slug"
                 value={formData.city_slug}
                 onChange={handleChange}
-                required
                 className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary"
               >
                 <option value="">Select city</option>
@@ -345,7 +339,7 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label htmlFor="hours_monfri" className="block text-sm font-semibold text-text-primary mb-3">
-                  Monday - Friday <span className="text-danger">*</span>
+                  Monday - Friday
                 </label>
                 <input
                   type="text"
@@ -353,7 +347,6 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
                   name="hours_monfri"
                   value={formData.hours_monfri}
                   onChange={handleChange}
-                  required
                   placeholder="08:00 - 20:00"
                   className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
                 />
@@ -361,7 +354,7 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
 
               <div>
                 <label htmlFor="hours_sat" className="block text-sm font-semibold text-text-primary mb-3">
-                  Saturday <span className="text-danger">*</span>
+                  Saturday
                 </label>
                 <input
                   type="text"
@@ -369,7 +362,6 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
                   name="hours_sat"
                   value={formData.hours_sat}
                   onChange={handleChange}
-                  required
                   placeholder="08:00 - 16:00"
                   className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
                 />
@@ -377,7 +369,7 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
 
               <div>
                 <label htmlFor="hours_sun" className="block text-sm font-semibold text-text-primary mb-3">
-                  Sunday <span className="text-danger">*</span>
+                  Sunday
                 </label>
                 <input
                   type="text"
@@ -385,7 +377,6 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
                   name="hours_sun"
                   value={formData.hours_sun}
                   onChange={handleChange}
-                  required
                   placeholder="Closed or 10:00 - 14:00"
                   className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 bg-background text-text-primary placeholder:text-text-tertiary"
                 />
