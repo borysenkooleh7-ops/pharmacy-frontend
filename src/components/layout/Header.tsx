@@ -108,38 +108,18 @@ export default function Header(): React.JSX.Element {
             <button
              onClick={() => navigate("/")} className="text-center lg:text-left">
               <h1 className="text-4xl lg:text-7xl font-black relative" style={{fontFamily: 'Orbitron, Exo 2, Rajdhani, Inter, sans-serif'}}>
-                <span className="absolute inset-0 bg-gradient-to-r from-pink-400 via-purple-500 to-indigo-600 bg-clip-text text-transparent blur-sm opacity-80 animate-pulse">
-                  Apoteka24.me
-                </span>
-                <span className="relative z-10 bg-gradient-to-r from-white via-cyan-200 to-blue-200 bg-clip-text text-transparent hover:from-yellow-200 hover:via-pink-200 hover:to-cyan-300 transition-all duration-700 ease-in-out transform hover:scale-110 cursor-pointer select-none tracking-widest"
+                <span className="relative z-10 bg-gradient-to-r from-[#ff8] via-cyan-200 to-[#afa] bg-clip-text text-transparent hover:from-yellow-200 hover:via-pink-200 hover:to-cyan-300 transition-all duration-700 ease-in-out transform hover:scale-110 cursor-pointer select-none tracking-wider"
                       style={{
                         textShadow: `
-                          0 0 10px rgba(255, 255, 255, 1),
-                          0 0 20px rgba(59, 130, 246, 0.8),
-                          0 0 30px rgba(147, 51, 234, 0.6),
-                          0 0 40px rgba(59, 130, 246, 0.4),
-                          0 0 60px rgba(147, 51, 234, 0.3),
-                          0 0 80px rgba(59, 130, 246, 0.2),
-                          0 4px 8px rgba(0, 0, 0, 0.5),
-                          0 8px 16px rgba(0, 0, 0, 0.3),
-                          0 16px 32px rgba(0, 0, 0, 0.2)
+                          6px 6px 0px rgba(0, 0, 0, 0.1),
+                          8px 8px 0px rgba(0, 0, 0, 0.1),
+                          10px 10px 0px rgba(0, 0, 0, 0.01),
                         `,
-                        filter: 'drop-shadow(0 0 20px rgba(147, 51, 234, 0.5)) drop-shadow(0 0 40px rgba(59, 130, 246, 0.3))'
+                        filter: 'drop-shadow(15px 15px 20px rgba(0, 0, 0, 0.4))',
+                        transform: 'perspective(1000px) rotateX(5deg)'
                       }}>
-                  <span className="inline-block hover:rotate-3 hover:scale-105 transition-all duration-500 transform-gpu hover:text-yellow-300">Apoteka</span>
-                  <span className="inline-block text-yellow-300 hover:text-pink-300 hover:scale-125 hover:rotate-6 transition-all duration-500 delay-100 font-black transform-gpu animate-bounce hover:animate-none mx-1
-                                 bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent hover:from-pink-400 hover:to-purple-500"
-                        style={{
-                          textShadow: `
-                            0 0 15px rgba(251, 191, 36, 0.8),
-                            0 0 25px rgba(251, 191, 36, 0.6),
-                            0 0 35px rgba(251, 191, 36, 0.4)
-                          `
-                        }}>24</span>
-                  <span className="inline-block hover:rotate-12 transition-transform duration-300 delay-75 transform-gpu text-cyan-300 hover:text-pink-300">.</span>
-                  <span className="inline-block hover:-rotate-3 hover:scale-105 transition-all duration-500 delay-200 transform-gpu hover:text-cyan-300">me</span>
+                  Apoteka24.me
                 </span>
-                <span className="absolute -inset-2 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-lg opacity-20 blur-xl animate-pulse"></span>
               </h1>
               <p className="text-lg text-primary-light">{t('slogan')}</p>
             </button>

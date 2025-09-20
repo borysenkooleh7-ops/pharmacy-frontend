@@ -13,6 +13,7 @@ interface PharmaciesAdminProps {
 export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): React.JSX.Element {
   const dispatch = useAppDispatch()
   const { pharmacies, loading, pagination } = useAppSelector(state => state.adminPharmacies)
+  const { cities } = useAppSelector(state => state.pharmacy)
 
   const [editingItem, setEditingItem] = useState<Pharmacy | null>(null)
   const [showCreateForm, setShowCreateForm] = useState<boolean>(false)
@@ -32,9 +33,13 @@ export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): Re
   }
 
   const handleUpdateItem = async (data: any) => {
-    await dispatch(updatePharmacy(data))
-    setEditingItem(null)
-    onMessage('Pharmacy updated successfully')
+    try {
+      await dispatch(updatePharmacy(data)).unwrap()
+      setEditingItem(null)
+      onMessage('Pharmacy updated successfully')
+    } catch (error: any) {
+      onMessage(`Failed to update pharmacy: ${error.message || 'Unknown error'}`)
+    }
   }
 
   const handleDeleteItem = async (id: number) => {
@@ -69,6 +74,17 @@ export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): Re
     const formData = new FormData(e.target as HTMLFormElement)
     const isEditing = !!editingItem
 
+    // Validate coordinates
+    const latStr = formData.get('lat') as string
+    const lngStr = formData.get('lng') as string
+    const lat = parseFloat(latStr)
+    const lng = parseFloat(lngStr)
+
+    if (isNaN(lat) || isNaN(lng)) {
+      onMessage('Please enter valid coordinates')
+      return
+    }
+
     const data = {
       ...(isEditing && { id: editingItem.id }),
       city_id: parseInt(formData.get('city_id') as string),
@@ -77,8 +93,8 @@ export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): Re
       address: formData.get('address') as string,
       phone: formData.get('phone') as string,
       website: formData.get('website') as string,
-      lat: parseFloat(formData.get('lat') as string),
-      lng: parseFloat(formData.get('lng') as string),
+      lat,
+      lng,
       is_24h: formData.get('is_24h') === 'on',
       open_sunday: formData.get('open_sunday') === 'on',
       hours_monfri: formData.get('hours_monfri') as string,
@@ -212,14 +228,26 @@ export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): Re
       >
         <form onSubmit={handleFormSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              label="City ID"
-              name="city_id"
-              type="number"
-              defaultValue={editingItem?.city_id || ''}
-              required
-              helpText="Enter the city ID where this pharmacy is located"
-            />
+            <div className="space-y-2">
+              <label htmlFor="city_id" className="block text-sm font-medium text-gray-700">
+                City *
+              </label>
+              <select
+                name="city_id"
+                id="city_id"
+                defaultValue={editingItem?.city_id || ''}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              >
+                <option value="">Select a city</option>
+                {cities.map((city) => (
+                  <option key={city.id} value={city.id}>
+                    {city.name_en} ({city.name_me})
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500">Select the city where this pharmacy is located</p>
+            </div>
 
             <FormField
               label="Name (Montenegrin)"
