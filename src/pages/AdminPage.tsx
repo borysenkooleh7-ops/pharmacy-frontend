@@ -91,7 +91,7 @@ export default function AdminPage(): React.JSX.Element {
               onClick={() => navigate('/')}
               className="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-md transition-all duration-200 transform hover:scale-105 active:scale-95 hover:shadow-md font-medium"
             >
-              Go Back
+              Go Home
             </button>
             <button
               onClick={authenticate}

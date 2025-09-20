@@ -4,6 +4,7 @@ import { useTranslation } from '../translations'
 import { useAppSelector } from '../hooks/redux'
 import LoadingSpinner from './ui/LoadingSpinner'
 import ErrorMessage from './ui/ErrorMessage'
+import SuccessModal from './ui/SuccessModal'
 
 export default function PharmacySubmissionForm(): React.JSX.Element {
   const { language } = useAppSelector(state => state.ui)
@@ -43,33 +44,25 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
     }
   }, [selectedCity, formData.city_slug])
 
-  // Reset form on successful submission
-  useEffect(() => {
-    if (submissionSuccess) {
-      setFormData({
-        name_me: '',
-        name_en: '',
-        address: '',
-        city_slug: selectedCity?.slug || '',
-        phone: '',
-        website: '',
-        email: '',
-        lat: '',
-        lng: '',
-        is_24h: false,
-        open_sunday: false,
-        hours_monfri: '',
-        hours_sat: '',
-        hours_sun: '',
-        notes: ''
-      })
-      // Clear success message after 5 seconds
-      const timeout = setTimeout(() => {
-        setSubmissionSuccess(false)
-      }, 5000)
-      return () => clearTimeout(timeout)
-    }
-  }, [submissionSuccess, selectedCity])
+  const resetForm = () => {
+    setFormData({
+      name_me: '',
+      name_en: '',
+      address: '',
+      city_slug: selectedCity?.slug || '',
+      phone: '',
+      website: '',
+      email: '',
+      lat: '',
+      lng: '',
+      is_24h: false,
+      open_sunday: false,
+      hours_monfri: '',
+      hours_sat: '',
+      hours_sun: '',
+      notes: ''
+    })
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target
@@ -124,22 +117,22 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
 
       <div className="p-8">
 
-        {/* Success Message */}
-        {submissionSuccess && (
-          <div className="p-6 mb-8 bg-success bg-opacity-10 border border-success border-opacity-20 rounded-xl">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-success text-white rounded-full flex items-center justify-center text-lg">
-                ✓
-              </div>
-              <div>
-                <h3 className="font-semibold text-success text-lg">{t('success') || 'Success!'}</h3>
-                <p className="text-sm text-success opacity-90">
-                  {language === 'me' ? 'Hvala! Vaš zahtjev je uspješno poslat.' : 'Thank you! Your request has been submitted successfully.'}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Success Modal */}
+        <SuccessModal
+          isOpen={submissionSuccess}
+          title={t('success') || 'Success!'}
+          message={
+            language === 'me'
+              ? 'Hvala vam! Vaš zahtjev za dodavanje apoteke je uspješno poslat. Naš tim će pregledati informacije i uskoro dodati apoteku u našu bazu podataka.'
+              : 'Thank you! Your pharmacy submission has been sent successfully. Our team will review the information and add the pharmacy to our database soon.'
+          }
+          autoRedirectSeconds={5}
+          onClose={() => setSubmissionSuccess(false)}
+          onSubmitAgain={() => {
+            resetForm()
+            setSubmissionSuccess(false)
+          }}
+        />
 
         {/* Error Message */}
         {submissionError && (
