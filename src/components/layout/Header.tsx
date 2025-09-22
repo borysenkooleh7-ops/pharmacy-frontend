@@ -24,8 +24,6 @@ export default function Header(): React.JSX.Element {
     const cityId = parseInt(event.target.value)
     const city = cities.find((c: City) => c.id === cityId)
     if (city) {
-      console.log("kkkkkkkkkk", city);
-      
       dispatch(setSelectedCity(city))
     }
   }

@@ -4,6 +4,7 @@ import { Loader } from '@googlemaps/js-api-loader'
 import { setSelectedPharmacy } from '../store/pharmacySlice'
 import { deletePharmacy, fetchPharmacies } from '../store/slices/pharmaciesSlice'
 import { API_CONFIG } from '../config/api'
+import { useTranslation } from '../translations'
 import type { Pharmacy } from '../store/slices/types'
 
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
@@ -21,6 +22,7 @@ export default function GoogleMap(): React.JSX.Element {
 
   const { pharmacies, selectedCity, selectedPharmacy } = useAppSelector(state => state.pharmacy)
   const { language } = useAppSelector(state => state.ui)
+  const t = useTranslation(language)
 
   // Check if user is admin by looking for admin key in sessionStorage
   const isAdmin = (): boolean => {
@@ -38,23 +40,23 @@ export default function GoogleMap(): React.JSX.Element {
     console.log('Is admin:', isAdmin())
 
     if (!isAdmin()) {
-      alert('Not authorized. Please login as admin first.')
+      alert(t('notAuthorized'))
       return
     }
 
-    if (window.confirm(`Are you sure you want to delete pharmacy with ID ${pharmacyId}?`)) {
+    if (window.confirm(`${t('confirmDelete')} ${pharmacyId}?`)) {
       try {
         console.log('Attempting to delete pharmacy...')
         await dispatch(deletePharmacy(pharmacyId)).unwrap()
         console.log('Pharmacy deleted successfully')
-        alert('Pharmacy deleted successfully')
+        alert(t('pharmacyDeletedSuccess'))
         // Refresh pharmacy list for current city
         if (selectedCity) {
           window.location.reload() // Simple refresh to update the map
         }
       } catch (error: any) {
         console.error('Delete failed:', error)
-        alert(`Failed to delete pharmacy: ${error.message || 'Unknown error'}`)
+        alert(`${t('deletePharmacyFailed')}: ${error.message || t('unknownError')}`)
       }
     }
   }
@@ -392,7 +394,7 @@ export default function GoogleMap(): React.JSX.Element {
          id="delete-pharmacy-${pharmacy.id}"
          class="mt-2 bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-xs rounded-md transition-colors duration-200"
          style="cursor: pointer;">
-         🗑️ Delete
+         🗑️ ${t('delete')}
        </button>` : ''
 
     return `
@@ -401,9 +403,9 @@ export default function GoogleMap(): React.JSX.Element {
         <p class="text-sm text-gray-600 mb-2">${pharmacy.address}</p>
         <div class="mb-2">${badges.join(' ')}</div>
         <div class="text-xs text-gray-500">
-          <p><strong>Radno vrijeme:</strong> ${pharmacy.hours_monfri}</p>
-          ${pharmacy.phone ? `<p><strong>Telefon:</strong> ${pharmacy.phone}</p>` : ''}
-          ${pharmacy.website ? `<p><a href="${pharmacy.website}" target="_blank" class="text-blue-600 hover:underline">Web sajt</a></p>` : ''}
+          <p><strong>${t('workingTime')}:</strong> ${pharmacy.hours_monfri}</p>
+          ${pharmacy.phone ? `<p><strong>${t('phone')}:</strong> ${pharmacy.phone}</p>` : ''}
+          ${pharmacy.website ? `<p><a href="${pharmacy.website}" target="_blank" class="text-blue-600 hover:underline">${t('website')}</a></p>` : ''}
         </div>
         ${adminDeleteButton}
       </div>

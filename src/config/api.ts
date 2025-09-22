@@ -6,7 +6,9 @@ import type {
   PharmacySubmission,
   ApiResponse,
   PaginatedResponse,
-  PaginationParams
+  PaginationParams,
+  SyncResult,
+  SyncStatus
 } from '../store/slices/types'
 
 export const API_CONFIG = {

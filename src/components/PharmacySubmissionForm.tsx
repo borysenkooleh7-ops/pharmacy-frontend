@@ -81,9 +81,11 @@ export default function PharmacySubmissionForm(): React.JSX.Element {
     setSubmissionLoading(true)
 
     try {
-      // Send form data as is without validation
+      // Prepare submission data with proper type conversion
       const submissionData = {
-        ...formData
+        ...formData,
+        lat: parseFloat(formData.lat as string) || 0,
+        lng: parseFloat(formData.lng as string) || 0
       }
 
       await apiService.createSubmission(submissionData)

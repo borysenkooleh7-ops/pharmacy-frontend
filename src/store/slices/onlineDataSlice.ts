@@ -45,8 +45,7 @@ export const fetchSyncableCities = createAsyncThunk(
   'onlineData/fetchSyncableCities',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await apiService.get<City[]>('/online-data/cities')
-      return response.data
+      return await apiService.getSyncableCities()
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch cities')
     }
@@ -57,8 +56,7 @@ export const syncCityData = createAsyncThunk(
   'onlineData/syncCityData',
   async (citySlug: string, { rejectWithValue }) => {
     try {
-      const response = await apiService.post<SyncResult>('/online-data/sync-city', { citySlug })
-      return response.data
+      return await apiService.syncCityData(citySlug)
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to sync city data')
     }

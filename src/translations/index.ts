@@ -71,6 +71,46 @@ export const translations = {
     submissionReview: 'Сви послати подаци биће прегледани пре додавања на мапу',
     submissionAccuracy: 'Молимо да унесете тачне и ажурне информације',
     submissionContact: 'Контактираћемо вас преко е-маила ако буду потребне додатне информације',
+
+    // Admin
+    editPharmacy: 'Измијени апотеку',
+    createPharmacy: 'Створи апотеку',
+    pharmacyCreated: 'Апотека је успјешно створена',
+    pharmacyUpdated: 'Апотека је успјешно ажурирана',
+    pharmacyDeleted: 'Апотека је успјешно обрисана',
+    createFailed: 'Неуспјешно стварање апотеке',
+    updateFailed: 'Неуспјешно ажурирање апотеке',
+    deleteFailed: 'Неуспјешно брисање апотеке',
+    validCoordinates: 'Молимо унесите важеће координате',
+    fetchingData: 'Преузимање...',
+    fetchOnlineData: 'Преузми онлајн податке',
+    active: 'Активна',
+    inactive: 'Неактивна',
+    latitude: 'Географска ширина',
+    longitude: 'Географска дужина',
+    saturdayHours: 'Субота радно вријеме',
+    sundayHours: 'Недјеља радно вријеме',
+    openOnSundayLabel: 'Отворено недјељом',
+    activeLabel: 'Активна',
+    streetAddress: 'Адреса улице',
+
+    // Google Map
+    pharmacyDeletedSuccess: 'Апотека је успјешно обрисана',
+    deletePharmacyFailed: 'Неуспјешно брисање апотеке',
+    notAuthorized: 'Немате дозволу. Молимо пријавите се као администратор',
+    confirmDelete: 'Да ли сте сигурни да желите да обришете ову апотеку',
+    workingTime: 'Радно вријеме',
+
+    // Common
+    unknownError: 'Непозната грешка',
+    delete: 'Обриши',
+    edit: 'Измијени',
+    create: 'Створи',
+    update: 'Ажурирај',
+    cancel: 'Откажи',
+    save: 'Сачувај',
+    yes: 'Да',
+    no: 'Не'
   },
   en: {
     // Header
@@ -144,6 +184,46 @@ export const translations = {
     submissionReview: 'All submitted data will be reviewed before being added to the map',
     submissionAccuracy: 'Please enter accurate and up-to-date information',
     submissionContact: 'We will contact you via email if additional information is needed',
+
+    // Admin
+    editPharmacy: 'Edit Pharmacy',
+    createPharmacy: 'Create Pharmacy',
+    pharmacyCreated: 'Pharmacy created successfully',
+    pharmacyUpdated: 'Pharmacy updated successfully',
+    pharmacyDeleted: 'Pharmacy deleted successfully',
+    createFailed: 'Failed to create pharmacy',
+    updateFailed: 'Failed to update pharmacy',
+    deleteFailed: 'Failed to delete pharmacy',
+    validCoordinates: 'Please enter valid coordinates',
+    fetchingData: 'Fetching...',
+    fetchOnlineData: 'Fetch Online Data',
+    active: 'Active',
+    inactive: 'Inactive',
+    latitude: 'Latitude',
+    longitude: 'Longitude',
+    saturdayHours: 'Saturday Hours',
+    sundayHours: 'Sunday Hours',
+    openOnSundayLabel: 'Open on Sunday',
+    activeLabel: 'Active',
+    streetAddress: 'Street address',
+
+    // Google Map
+    pharmacyDeletedSuccess: 'Pharmacy deleted successfully',
+    deletePharmacyFailed: 'Failed to delete pharmacy',
+    notAuthorized: 'Not authorized. Please login as admin first',
+    confirmDelete: 'Are you sure you want to delete this pharmacy',
+    workingTime: 'Working time',
+
+    // Common
+    unknownError: 'Unknown error',
+    delete: 'Delete',
+    edit: 'Edit',
+    create: 'Create',
+    update: 'Update',
+    cancel: 'Cancel',
+    save: 'Save',
+    yes: 'Yes',
+    no: 'No'
   }
 }
 

@@ -3,6 +3,7 @@ import { useAppSelector, useAppDispatch } from '../../hooks/redux'
 import { createPharmacy, updatePharmacy, deletePharmacy, fetchPharmacies } from '../../store/slices/pharmaciesSlice'
 import { Pharmacy } from '../../store/slices/types'
 import { MONTENEGRO_CITIES } from '../../data/cities'
+import { useTranslation } from '../../translations'
 import Pagination from '../common/Pagination'
 import Modal from '../common/Modal'
 import FormField from '../common/FormField'
@@ -14,6 +15,8 @@ interface PharmaciesAdminProps {
 export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): React.JSX.Element {
   const dispatch = useAppDispatch()
   const { pharmacies, loading, pagination } = useAppSelector(state => state.adminPharmacies)
+  const { language } = useAppSelector(state => state.ui)
+  const t = useTranslation(language)
 
   const [editingItem, setEditingItem] = useState<Pharmacy | null>(null)
   const [showCreateForm, setShowCreateForm] = useState<boolean>(false)
@@ -32,9 +35,9 @@ export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): Re
       await dispatch(createPharmacy(data)).unwrap()
       setShowCreateForm(false)
       // Redux slice automatically adds the new pharmacy to state, no need to refetch
-      onMessage('Pharmacy created successfully')
+      onMessage(t('pharmacyCreated'))
     } catch (error: any) {
-      onMessage(`Failed to create pharmacy: ${error.message || 'Unknown error'}`)
+      onMessage(`${t('createFailed')}: ${error.message || t('unknownError')}`)
     }
   }
 
@@ -42,14 +45,14 @@ export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): Re
     try {
       await dispatch(updatePharmacy(data)).unwrap()
       setEditingItem(null)
-      onMessage('Pharmacy updated successfully')
+      onMessage(t('pharmacyUpdated'))
     } catch (error: any) {
-      onMessage(`Failed to update pharmacy: ${error.message || 'Unknown error'}`)
+      onMessage(`${t('updateFailed')}: ${error.message || t('unknownError')}`)
     }
   }
 
   const handleDeleteItem = async (id: number) => {
-    if (window.confirm('Are you sure you want to delete this pharmacy?')) {
+    if (window.confirm(t('confirmDelete'))) {
       try {
         await dispatch(deletePharmacy(id)).unwrap()
         // Redux slice automatically removes the pharmacy from state and updates pagination
@@ -57,9 +60,9 @@ export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): Re
         if (pharmacies.length === 1 && currentPage > 1) {
           setCurrentPage(currentPage - 1)
         }
-        onMessage('Pharmacy deleted successfully')
+        onMessage(t('pharmacyDeleted'))
       } catch (error: any) {
-        onMessage(`Failed to delete pharmacy: ${error.message || 'Unknown error'}`)
+        onMessage(`${t('deleteFailed')}: ${error.message || t('unknownError')}`)
       }
     }
   }
@@ -90,7 +93,7 @@ export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): Re
     const lng = parseFloat(lngStr)
 
     if (isNaN(lat) || isNaN(lng)) {
-      onMessage('Please enter valid coordinates')
+      onMessage(t('validCoordinates'))
       return
     }
 
@@ -139,7 +142,7 @@ export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): Re
         onMessage(`Error: ${data.message}`)
       }
     } catch (error) {
-      onMessage('Error fetching online data')
+      onMessage('Error fetching online data') // Keep English for now as this is admin function
     }
     setFetching(false)
   }
@@ -168,7 +171,7 @@ export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): Re
             disabled={fetching}
             className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
           >
-            {fetching ? 'Fetching...' : 'Fetch Online Data'}
+            {fetching ? t('fetchingData') : t('fetchOnlineData')}
           </button>
           <button
             onClick={() => setShowCreateForm(true)}
