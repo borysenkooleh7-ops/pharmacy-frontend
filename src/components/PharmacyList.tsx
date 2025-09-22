@@ -5,7 +5,11 @@ import LoadingSpinner from './ui/LoadingSpinner'
 import { SearchIcon, PhoneIcon, ClockIcon } from './ui/Icons'
 import type { Pharmacy } from '../store/slices/types'
 
-export default function PharmacyList(): React.JSX.Element {
+interface PharmacyListProps {
+  onPharmacySelect?: () => void
+}
+
+export default function PharmacyList({ onPharmacySelect }: PharmacyListProps): React.JSX.Element {
   const dispatch = useAppDispatch()
   const { language } = useAppSelector(state => state.ui)
   const { pharmacies, selectedPharmacy, loading } = useAppSelector(state => state.pharmacy)
@@ -13,6 +17,7 @@ export default function PharmacyList(): React.JSX.Element {
 
   const handlePharmacyClick = (pharmacy: Pharmacy): void => {
     dispatch(setSelectedPharmacy(pharmacy))
+    onPharmacySelect?.()
   }
 
   if (loading.pharmacies) {
