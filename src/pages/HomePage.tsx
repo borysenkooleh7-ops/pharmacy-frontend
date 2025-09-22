@@ -25,6 +25,7 @@ export default function HomePage(): React.JSX.Element {
     if (selectedCity) {
       dispatch(fetchPharmacies({
         cityId: selectedCity.id,
+        unlimited: true, // Fetch all pharmacies for map display
         ...filters
       }))
     }
@@ -34,6 +35,7 @@ export default function HomePage(): React.JSX.Element {
     if (selectedCity) {
       dispatch(fetchPharmacies({
         cityId: selectedCity.id,
+        unlimited: true, // Fetch all pharmacies for map display
         ...filters
       }))
     }
