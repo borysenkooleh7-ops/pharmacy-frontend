@@ -91,7 +91,7 @@ export default function BenefitsSection(): React.JSX.Element {
           </button>
 
           {/* Admin Panel Button */}
-          <button
+          {/* <button
             onClick={()=> navigate("/admin")}
             className="group flex items-center gap-4 bg-secondary hover:bg-secondary-dark text-white font-semibold px-8 py-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 active:scale-95"
           >
@@ -109,7 +109,7 @@ export default function BenefitsSection(): React.JSX.Element {
                 {language === 'me' ? 'Upravljaj sistemom' : 'Manage the system'}
               </div>
             </div>
-          </button>
+          </button> */}
         </div>
 
         <div className="mt-6 text-center">
