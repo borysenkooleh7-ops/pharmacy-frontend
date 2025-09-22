@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react'
 import { useAppDispatch, useAppSelector } from '../hooks/redux'
 import { Loader } from '@googlemaps/js-api-loader'
 import { setSelectedPharmacy } from '../store/pharmacySlice'
+import { deletePharmacy, fetchPharmacies } from '../store/slices/pharmaciesSlice'
+import { API_CONFIG } from '../config/api'
 import type { Pharmacy } from '../store/slices/types'
 
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
@@ -19,6 +21,43 @@ export default function GoogleMap(): React.JSX.Element {
 
   const { pharmacies, selectedCity, selectedPharmacy } = useAppSelector(state => state.pharmacy)
   const { language } = useAppSelector(state => state.ui)
+
+  // Check if user is admin by looking for admin key in sessionStorage
+  const isAdmin = (): boolean => {
+    try {
+      const adminKey = sessionStorage.getItem('adminKey')
+      return adminKey === API_CONFIG.ADMIN_KEY
+    } catch {
+      return false
+    }
+  }
+
+  // Handle pharmacy deletion for admin users
+  const handleDeletePharmacy = async (pharmacyId: number): Promise<void> => {
+    console.log('Delete button clicked for pharmacy ID:', pharmacyId)
+    console.log('Is admin:', isAdmin())
+
+    if (!isAdmin()) {
+      alert('Not authorized. Please login as admin first.')
+      return
+    }
+
+    if (window.confirm(`Are you sure you want to delete pharmacy with ID ${pharmacyId}?`)) {
+      try {
+        console.log('Attempting to delete pharmacy...')
+        await dispatch(deletePharmacy(pharmacyId)).unwrap()
+        console.log('Pharmacy deleted successfully')
+        alert('Pharmacy deleted successfully')
+        // Refresh pharmacy list for current city
+        if (selectedCity) {
+          window.location.reload() // Simple refresh to update the map
+        }
+      } catch (error: any) {
+        console.error('Delete failed:', error)
+        alert(`Failed to delete pharmacy: ${error.message || 'Unknown error'}`)
+      }
+    }
+  }
 
   // Default coordinates for Podgorica
   const defaultCenter = { lat: 42.4415, lng: 19.2621 }
@@ -280,6 +319,29 @@ export default function GoogleMap(): React.JSX.Element {
           map: mapInstanceRef.current,
           anchor: marker
         })
+
+        // Add event listener for delete button after info window opens
+        setTimeout(() => {
+          const deleteButton = document.getElementById(`delete-pharmacy-${pharmacy.id}`)
+          console.log('Looking for delete button with ID:', `delete-pharmacy-${pharmacy.id}`)
+          console.log('Delete button found:', !!deleteButton)
+          console.log('Is admin check:', isAdmin())
+
+          if (deleteButton && isAdmin()) {
+            console.log('Adding click event listener to delete button')
+            deleteButton.addEventListener('click', (e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              console.log('Delete button clicked')
+              handleDeletePharmacy(pharmacy.id)
+            })
+          } else if (deleteButton && !isAdmin()) {
+            console.log('Delete button found but user is not admin')
+          } else if (!deleteButton) {
+            console.log('Delete button not found in DOM')
+          }
+        }, 100)
+
         dispatch(setSelectedPharmacy(pharmacy))
       })
 
@@ -325,6 +387,14 @@ export default function GoogleMap(): React.JSX.Element {
       badges.push('<span class="bg-orange-500 text-white px-2 py-1 text-xs rounded-full">Nedjelja</span>')
     }
 
+    const adminDeleteButton = isAdmin() ?
+      `<button
+         id="delete-pharmacy-${pharmacy.id}"
+         class="mt-2 bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-xs rounded-md transition-colors duration-200"
+         style="cursor: pointer;">
+         🗑️ Delete
+       </button>` : ''
+
     return `
       <div class="p-3 max-w-xs">
         <h3 class="font-semibold text-gray-800 mb-2">${name}</h3>
@@ -335,6 +405,7 @@ export default function GoogleMap(): React.JSX.Element {
           ${pharmacy.phone ? `<p><strong>Telefon:</strong> ${pharmacy.phone}</p>` : ''}
           ${pharmacy.website ? `<p><a href="${pharmacy.website}" target="_blank" class="text-blue-600 hover:underline">Web sajt</a></p>` : ''}
         </div>
+        ${adminDeleteButton}
       </div>
     `
   }

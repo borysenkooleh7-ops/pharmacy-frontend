@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppSelector, useAppDispatch } from '../hooks/redux'
 import { fetchPharmacies } from '../store/slices/pharmaciesSlice'
@@ -27,9 +27,21 @@ export default function AdminPage(): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<ActiveTab>('pharmacies')
   const [message, setMessage] = useState<string>('')
 
+  // Check if admin is already authenticated on page load
+  useEffect(() => {
+    const storedAdminKey = sessionStorage.getItem('adminKey')
+    if (storedAdminKey === 'admin123') {
+      setIsAuthenticated(true)
+      setAdminKey(storedAdminKey)
+      loadAllData()
+    }
+  }, [])
+
   const authenticate = (): void => {
     if (adminKey === 'admin123') {
       setIsAuthenticated(true)
+      // Store admin key in sessionStorage for other components to access
+      sessionStorage.setItem('adminKey', adminKey)
       loadAllData()
       setMessage('')
     } else {
