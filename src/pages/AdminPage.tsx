@@ -9,8 +9,9 @@ import PharmaciesAdmin from '../components/admin/PharmaciesAdmin'
 import MedicinesAdmin from '../components/admin/MedicinesAdmin'
 import AdsAdmin from '../components/admin/AdsAdmin'
 import SubmissionsAdmin from '../components/admin/SubmissionsAdmin'
+import OnlineDataAdmin from '../components/admin/OnlineDataAdmin'
 
-type ActiveTab = 'pharmacies' | 'medicines' | 'ads' | 'submissions'
+type ActiveTab = 'pharmacies' | 'medicines' | 'ads' | 'submissions' | 'onlinedata'
 
 export default function AdminPage(): React.JSX.Element {
   const navigate = useNavigate()
@@ -115,6 +116,8 @@ export default function AdminPage(): React.JSX.Element {
         return <AdsAdmin onMessage={handleMessage} />
       case 'submissions':
         return <SubmissionsAdmin onMessage={handleMessage} />
+      case 'onlinedata':
+        return <OnlineDataAdmin onMessage={handleMessage} />
       default:
         return <PharmaciesAdmin onMessage={handleMessage} />
     }
@@ -150,7 +153,8 @@ export default function AdminPage(): React.JSX.Element {
                 { key: 'pharmacies', label: 'Pharmacies', count: pharmacies.length },
                 { key: 'medicines', label: 'Medicines', count: medicines.length },
                 { key: 'ads', label: 'Advertisements', count: ads.length },
-                { key: 'submissions', label: 'Submissions', count: submissions.length }
+                { key: 'submissions', label: 'Submissions', count: submissions.length },
+                { key: 'onlinedata', label: 'Online Data', count: '' }
               ] as const).map(tab => (
                 <button
                   key={tab.key}
@@ -161,7 +165,7 @@ export default function AdminPage(): React.JSX.Element {
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
-                  {tab.label} ({tab.count})
+                  {tab.label} {tab.count !== '' && `(${tab.count})`}
                 </button>
               ))}
             </nav>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAppSelector, useAppDispatch } from '../../hooks/redux'
 import { createPharmacy, updatePharmacy, deletePharmacy, fetchPharmacies } from '../../store/slices/pharmaciesSlice'
 import { Pharmacy } from '../../store/slices/types'
+import { MONTENEGRO_CITIES } from '../../data/cities'
 import Pagination from '../common/Pagination'
 import Modal from '../common/Modal'
 import FormField from '../common/FormField'
@@ -13,11 +14,13 @@ interface PharmaciesAdminProps {
 export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): React.JSX.Element {
   const dispatch = useAppDispatch()
   const { pharmacies, loading, pagination } = useAppSelector(state => state.adminPharmacies)
-  const { cities } = useAppSelector(state => state.pharmacy)
 
   const [editingItem, setEditingItem] = useState<Pharmacy | null>(null)
   const [showCreateForm, setShowCreateForm] = useState<boolean>(false)
   const [currentPage, setCurrentPage] = useState<number>(1)
+  const [fetching, setFetching] = useState<boolean>(false)
+  const [selectedCity, setSelectedCity] = useState<string>('podgorica')
+  const [lastFetchResult, setLastFetchResult] = useState<any>(null)
   const [pageSize, setPageSize] = useState<number>(20)
 
   useEffect(() => {
@@ -116,17 +119,112 @@ export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): Re
     }
   }
 
+  const fetchOnlineData = async () => {
+    setFetching(true)
+    try {
+      const response = await fetch('http://localhost:5000/api/online-data/sync-city', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-key': 'admin123'
+        },
+        body: JSON.stringify({ citySlug: selectedCity })
+      })
+      const data = await response.json()
+      if (data.success) {
+        setLastFetchResult(data.data)
+        onMessage(`Success! ${data.data.created} pharmacies created, ${data.data.updated} updated for ${data.data.cityName}`)
+        dispatch(fetchPharmacies({ page: currentPage, limit: pageSize }))
+      } else {
+        onMessage(`Error: ${data.message}`)
+      }
+    } catch (error) {
+      onMessage('Error fetching online data')
+    }
+    setFetching(false)
+  }
+
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">Pharmacies ({pharmacies.length})</h3>
-        <button
-          onClick={() => setShowCreateForm(true)}
-          className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
-        >
-          Add New Pharmacy
-        </button>
+        <div>
+          <h3 className="text-lg font-semibold">Pharmacies ({pharmacies.length})</h3>
+          <p className="text-xs text-gray-500">Fetch prevents duplicates by Google Place ID and name matching</p>
+        </div>
+        <div className="flex gap-2 items-center">
+          <select
+            value={selectedCity}
+            onChange={(e) => setSelectedCity(e.target.value)}
+            className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {MONTENEGRO_CITIES.map(city => (
+              <option key={city.slug} value={city.slug}>
+                {city.name_en}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={fetchOnlineData}
+            disabled={fetching}
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
+          >
+            {fetching ? 'Fetching...' : 'Fetch Online Data'}
+          </button>
+          <button
+            onClick={() => setShowCreateForm(true)}
+            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+          >
+            Add New Pharmacy
+          </button>
+        </div>
       </div>
+
+      {lastFetchResult && (
+        <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <h4 className="font-semibold text-blue-900 mb-2">
+            Last Fetch Result - {lastFetchResult.cityName}
+          </h4>
+          <div className="grid grid-cols-3 gap-4 mb-3">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">{lastFetchResult.created}</div>
+              <div className="text-sm text-gray-600">Created</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">{lastFetchResult.updated}</div>
+              <div className="text-sm text-gray-600">Updated</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-600">{lastFetchResult.processed}</div>
+              <div className="text-sm text-gray-600">Total Processed</div>
+            </div>
+          </div>
+          {lastFetchResult.pharmacies && lastFetchResult.pharmacies.length > 0 && (
+            <div className="max-h-40 overflow-y-auto">
+              <div className="text-sm font-medium text-gray-700 mb-2">Processed Pharmacies:</div>
+              <div className="space-y-1">
+                {lastFetchResult.pharmacies.map((pharmacy: any, index: number) => (
+                  <div key={index} className="flex justify-between items-center text-sm bg-white p-2 rounded">
+                    <span className="font-medium">{pharmacy.name}</span>
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${
+                      pharmacy.action === 'created'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-blue-100 text-blue-800'
+                    }`}>
+                      {pharmacy.action}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          <button
+            onClick={() => setLastFetchResult(null)}
+            className="mt-3 text-sm text-blue-600 hover:text-blue-800"
+          >
+            Clear Results
+          </button>
+        </div>
+      )}
 
       {loading ? (
         <div className="p-8 text-center">
@@ -138,7 +236,25 @@ export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): Re
           No pharmacies found
         </div>
       ) : (
-        <div className="overflow-x-auto">
+        <>
+          {/* Top Pagination */}
+          {pharmacies.length > 0 && (
+            <div className="mb-4">
+              <Pagination
+                currentPage={pagination.currentPage}
+                totalPages={pagination.totalPages}
+                totalItems={pagination.totalItems}
+                itemsPerPage={pagination.itemsPerPage}
+                hasNextPage={pagination.hasNextPage}
+                hasPrevPage={pagination.hasPrevPage}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+                pageSize={pageSize}
+              />
+            </div>
+          )}
+
+          <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
@@ -207,23 +323,27 @@ export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): Re
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+
+          {/* Bottom Pagination */}
+          {pharmacies.length > 0 && (
+            <div className="mt-4">
+              <Pagination
+                currentPage={pagination.currentPage}
+                totalPages={pagination.totalPages}
+                totalItems={pagination.totalItems}
+                itemsPerPage={pagination.itemsPerPage}
+                hasNextPage={pagination.hasNextPage}
+                hasPrevPage={pagination.hasPrevPage}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+                pageSize={pageSize}
+              />
+            </div>
+          )}
+        </>
       )}
 
-      {/* Pagination */}
-      {!loading && pharmacies.length > 0 && (
-        <Pagination
-          currentPage={pagination.currentPage}
-          totalPages={pagination.totalPages}
-          totalItems={pagination.totalItems}
-          itemsPerPage={pagination.itemsPerPage}
-          hasNextPage={pagination.hasNextPage}
-          hasPrevPage={pagination.hasPrevPage}
-          onPageChange={handlePageChange}
-          onPageSizeChange={handlePageSizeChange}
-          pageSize={pageSize}
-        />
-      )}
 
       {/* Modal for Create/Edit */}
       <Modal
@@ -246,7 +366,7 @@ export default function PharmaciesAdmin({ onMessage }: PharmaciesAdminProps): Re
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
               >
                 <option value="">Select a city</option>
-                {cities.map((city) => (
+                {MONTENEGRO_CITIES.map((city) => (
                   <option key={city.id} value={city.id}>
                     {city.name_en} ({city.name_me})
                   </option>

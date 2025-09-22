@@ -6,6 +6,7 @@ import pharmaciesSlice from './slices/pharmaciesSlice'
 import medicinesSlice from './slices/medicinesSlice'
 import adsSlice from './slices/adsSlice'
 import submissionsSlice from './slices/submissionsSlice'
+import onlineDataSlice from './slices/onlineDataSlice'
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     adminMedicines: medicinesSlice,
     adminAds: adsSlice, // Admin ads management
     adminSubmissions: submissionsSlice,
+    onlineData: onlineDataSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

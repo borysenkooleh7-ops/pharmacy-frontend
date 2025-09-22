@@ -205,6 +205,30 @@ class ApiService {
     })
     return response.data
   }
+
+  // Online data sync methods
+  async getSyncableCities(): Promise<City[]> {
+    const response = await this.request<ApiResponse<City[]>>('/online-data/cities', {
+      includeAuth: true
+    })
+    return response.data
+  }
+
+  async syncCityData(citySlug: string): Promise<SyncResult> {
+    const response = await this.request<ApiResponse<SyncResult>>('/online-data/sync-city', {
+      method: 'POST',
+      body: JSON.stringify({ citySlug }),
+      includeAuth: true
+    })
+    return response.data
+  }
+
+  async getSyncStatus(): Promise<SyncStatus[]> {
+    const response = await this.request<ApiResponse<SyncStatus[]>>('/online-data/status', {
+      includeAuth: true
+    })
+    return response.data
+  }
 }
 
 export const apiService = new ApiService()

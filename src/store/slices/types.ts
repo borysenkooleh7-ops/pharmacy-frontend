@@ -136,3 +136,27 @@ export interface PaginationState {
   hasNextPage: boolean
   hasPrevPage: boolean
 }
+
+// Online Data Sync Types
+export interface SyncResult {
+  citySlug: string
+  cityName: string
+  success: boolean
+  processed: number
+  created: number
+  updated: number
+  pharmacies: Array<{
+    id: number
+    name: string
+    action: 'created' | 'updated'
+    google_place_id?: string
+  }>
+  message: string
+}
+
+export interface SyncStatus {
+  citySlug: string
+  cityName: string
+  pharmacyCount: number
+  lastSync: string | null
+}
