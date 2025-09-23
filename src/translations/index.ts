@@ -51,6 +51,8 @@ export const translations = {
     noPharmaciesFound: 'Нису пронађене апотеке',
     loading: 'Учитавање...',
     error: 'Дошло је до грешке',
+    yourLocation: 'Ваша локација',
+    yourCurrentPosition: 'Ово је ваша тренутна позиција',
 
     // Benefits
     benefitsTitle: 'Зашто користити Apoteka24.me?',
@@ -164,6 +166,8 @@ export const translations = {
     noPharmaciesFound: 'No pharmacies found',
     loading: 'Loading...',
     error: 'An error occurred',
+    yourLocation: 'Your Location',
+    yourCurrentPosition: 'This is your current position',
 
     // Benefits
     benefitsTitle: 'Why use Apoteka24.me?',

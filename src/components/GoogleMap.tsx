@@ -18,10 +18,11 @@ export default function GoogleMap(): React.JSX.Element {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
   const markersRef = useRef<MarkerData[]>([])
+  const userMarkerRef = useRef<any>(null)
   const dispatch = useAppDispatch()
 
   const { pharmacies, selectedCity, selectedPharmacy } = useAppSelector(state => state.pharmacy)
-  const { language } = useAppSelector(state => state.ui)
+  const { language, userLocation } = useAppSelector(state => state.ui)
   const t = useTranslation(language)
 
   // Check if user is admin by looking for admin key in sessionStorage
@@ -65,8 +66,16 @@ export default function GoogleMap(): React.JSX.Element {
   const defaultCenter = { lat: 42.4415, lng: 19.2621 }
 
   const getCenterCoordinates = (): { lat: number; lng: number } => {
+    // ALWAYS prioritize user location for map center (anywhere in the world)
+    if (userLocation) {
+      return {
+        lat: userLocation.latitude,
+        lng: userLocation.longitude
+      }
+    }
+
+    // If user selected a city, center on that city's pharmacies
     if (selectedCity) {
-      // Use first pharmacy in selected city with valid coordinates as center
       const cityPharmacies = pharmacies.filter(p => {
         if (!p.city_id || p.city_id !== selectedCity.id || !p.lat || !p.lng) {
           return false
@@ -81,7 +90,17 @@ export default function GoogleMap(): React.JSX.Element {
           lng: Number(cityPharmacies[0].lng)
         }
       }
+
+      // If city is selected but no pharmacies, use city coordinates if available
+      if (selectedCity.latitude && selectedCity.longitude) {
+        return {
+          lat: selectedCity.latitude,
+          lng: selectedCity.longitude
+        }
+      }
     }
+
+    // Last resort: Montenegro center (only when no user location and no city selected)
     return defaultCenter
   }
 
@@ -134,9 +153,126 @@ export default function GoogleMap(): React.JSX.Element {
 
       // Update markers after map is initialized, even if pharmacies array is currently empty
       updateMarkers()
+      updateUserLocationMarker()
     } catch (error) {
       console.error('Error loading Google Maps:', error)
     }
+  }
+
+  const updateUserLocationMarker = (): void => {
+    if (!mapInstanceRef.current || !userLocation) return
+
+    // Remove existing user marker
+    if (userMarkerRef.current) {
+      userMarkerRef.current.map = null
+      userMarkerRef.current = null
+    }
+
+    // Create user position marker with enhanced distinctive style
+    const userPosition = {
+      lat: userLocation.latitude,
+      lng: userLocation.longitude
+    }
+
+    // Create custom user location marker with enhanced visibility
+    const userMarkerElement = document.createElement('div')
+    userMarkerElement.style.position = 'relative'
+    userMarkerElement.style.width = '24px'
+    userMarkerElement.style.height = '24px'
+    userMarkerElement.style.borderRadius = '50%'
+    userMarkerElement.style.backgroundColor = '#1976D2' // More distinctive blue
+    userMarkerElement.style.border = '4px solid #ffffff'
+    userMarkerElement.style.boxShadow = '0 4px 12px rgba(0,0,0,0.4), 0 0 0 2px rgba(25, 118, 210, 0.3)'
+    userMarkerElement.style.cursor = 'pointer'
+
+    // Add multiple pulsing rings for better visibility
+    const createPulseRing = (size: string, opacity: string, duration: string) => {
+      const ring = document.createElement('div')
+      ring.style.position = 'absolute'
+      ring.style.top = '50%'
+      ring.style.left = '50%'
+      ring.style.width = size
+      ring.style.height = size
+      ring.style.borderRadius = '50%'
+      ring.style.backgroundColor = `rgba(25, 118, 210, ${opacity})`
+      ring.style.transform = 'translate(-50%, -50%)'
+      ring.style.animation = `pulse ${duration} infinite`
+      return ring
+    }
+
+    // Add multiple pulse rings for dramatic effect
+    userMarkerElement.appendChild(createPulseRing('50px', '0.4', '2s'))
+    userMarkerElement.appendChild(createPulseRing('70px', '0.2', '3s'))
+
+    // Add enhanced pulse animation styles
+    if (!document.getElementById('user-location-styles')) {
+      const styleSheet = document.createElement('style')
+      styleSheet.id = 'user-location-styles'
+      styleSheet.innerHTML = `
+        @keyframes pulse {
+          0% {
+            transform: translate(-50%, -50%) scale(0.3);
+            opacity: 1;
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(2.5);
+            opacity: 0;
+          }
+        }
+      `
+      document.head.appendChild(styleSheet)
+    }
+
+    userMarkerRef.current = new google.maps.marker.AdvancedMarkerElement({
+      position: userPosition,
+      map: mapInstanceRef.current,
+      content: userMarkerElement,
+      title: t('yourLocation') || 'Your Location',
+      zIndex: 1000 // High z-index to appear above pharmacy markers
+    })
+
+    // Enhanced info window for user location
+    userMarkerRef.current.addListener('click', () => {
+      // Calculate distance to nearest pharmacy for display
+      let nearestDistance = 'calculating...'
+      if (pharmacies.length > 0) {
+        const distances = pharmacies
+          .filter(p => p.lat && p.lng)
+          .map(p => {
+            const R = 6371
+            const dLat = (Number(p.lat) - userLocation.latitude) * Math.PI / 180
+            const dLng = (Number(p.lng) - userLocation.longitude) * Math.PI / 180
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(userLocation.latitude * Math.PI / 180) * Math.cos(Number(p.lat) * Math.PI / 180) * Math.sin(dLng/2) * Math.sin(dLng/2)
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+          })
+
+        if (distances.length > 0) {
+          const minDistance = Math.min(...distances)
+          nearestDistance = minDistance < 1 ? `${Math.round(minDistance * 1000)}m` : `${minDistance.toFixed(1)}km`
+        }
+      }
+
+      const infoWindow = new google.maps.InfoWindow({
+        content: `
+          <div style="padding: 12px; min-width: 250px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+            <h3 style="margin: 0 0 10px 0; color: #1976d2; font-size: 18px; display: flex; align-items: center;">
+              <span style="font-size: 20px; margin-right: 8px;">📍</span>
+              ${t('yourLocation') || 'Your Location'}
+            </h3>
+            <p style="margin: 0 0 8px 0; color: #666; font-size: 14px;">
+              ${t('yourCurrentPosition') || 'This is your current position'}
+            </p>
+            <div style="background: #f5f5f5; padding: 8px; border-radius: 6px; margin-top: 8px;">
+              <p style="margin: 0; color: #333; font-size: 13px;">
+                <strong>📋 Showing ${pharmacies.length} nearby pharmacies</strong><br>
+                <span style="color: #666;">Nearest pharmacy: ${nearestDistance}</span>
+              </p>
+            </div>
+          </div>
+        `
+      })
+      infoWindow.open(mapInstanceRef.current, userMarkerRef.current)
+    })
   }
 
   const updateMarkers = (): void => {
@@ -360,12 +496,23 @@ export default function GoogleMap(): React.JSX.Element {
 
     if (validPharmacies.length > 0) {
       const bounds = new google.maps.LatLngBounds()
+
+      // Include all pharmacy locations
       validPharmacies.forEach((pharmacy: Pharmacy) => {
         bounds.extend({
           lat: Number(pharmacy.lat),
           lng: Number(pharmacy.lng)
         })
       })
+
+      // IMPORTANT: Also include user location in bounds to show both user and pharmacies
+      if (userLocation) {
+        bounds.extend({
+          lat: userLocation.latitude,
+          lng: userLocation.longitude
+        })
+      }
+
       mapInstanceRef.current.fitBounds(bounds)
 
       // Restore tilt after fitBounds() - fitBounds resets tilt to 0
@@ -413,9 +560,9 @@ export default function GoogleMap(): React.JSX.Element {
   }
 
   useEffect(() => {
-    // Add a small delay to ensure DOM is ready and wait for selected city
+    // Initialize map when we have either user location or selected city
     const initTimer = setTimeout(() => {
-      if (mapRef.current && GOOGLE_MAPS_API_KEY && selectedCity) {
+      if (mapRef.current && GOOGLE_MAPS_API_KEY && (userLocation || selectedCity)) {
         initializeMap()
       }
     }, 100)
@@ -426,15 +573,21 @@ export default function GoogleMap(): React.JSX.Element {
         if (marker) marker.map = null
       })
       markersRef.current = []
+      if (userMarkerRef.current) {
+        userMarkerRef.current.map = null
+        userMarkerRef.current = null
+      }
     }
-  }, [selectedCity, pharmacies])
+  }, [selectedCity, pharmacies, userLocation])
 
   useEffect(() => {
     if (mapInstanceRef.current) {
       // Always update markers when pharmacies data changes, even if empty
       updateMarkers()
+      // Also update user location marker
+      updateUserLocationMarker()
     }
-  }, [pharmacies, language])
+  }, [pharmacies, language, userLocation])
 
   // Additional effect to handle the case where map initializes before pharmacy data loads
   useEffect(() => {
@@ -445,11 +598,14 @@ export default function GoogleMap(): React.JSX.Element {
   }, [pharmacies.length])
 
   useEffect(() => {
-    if (mapInstanceRef.current && selectedCity) {
+    if (mapInstanceRef.current) {
       const center = getCenterCoordinates()
       mapInstanceRef.current.setCenter(center)
 
-      // Preserve tilt when changing city
+      // Update user location marker when location changes
+      updateUserLocationMarker()
+
+      // Preserve tilt when changing location
       setTimeout(() => {
         const currentMapType = mapInstanceRef.current.getMapTypeId()
         if (currentMapType === 'satellite' || currentMapType === 'hybrid') {

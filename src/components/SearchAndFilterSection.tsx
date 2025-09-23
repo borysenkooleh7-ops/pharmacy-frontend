@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '../hooks/redux'
-import { updateFilters, clearFilters, fetchNearbyPharmacies, searchMedicines, clearMedicines, setSearchType } from '../store/pharmacySlice'
+import { updateFilters, clearFilters, fetchNearbyPharmacies, searchMedicines, clearMedicines, setSearchType, setSelectedCity } from '../store/pharmacySlice'
 import { setUserLocation, setLoadingLocation } from '../store/uiSlice'
 import { useTranslation } from '../translations'
 import LoadingSpinner from './ui/LoadingSpinner'
@@ -57,43 +57,82 @@ export default function SearchAndFilterSection(): React.JSX.Element {
       return
     }
 
+    // Clear selected city when using nearby search
+    dispatch(setSelectedCity(null))
+
     if (userLocation) {
-      // Use existing location
+      // Calculate optimal radius for user's location
+      // Use search radius from environment variable
+      const optimizedRadius = parseInt(import.meta.env.VITE_SEARCH_RADIUS) || 2000
+      console.log(`🎯 Nearby Search - Using optimized radius: ${optimizedRadius}km for your location`)
+
+      // Use existing location with optimized radius
       dispatch(fetchNearbyPharmacies({
         lat: userLocation.latitude,
         lng: userLocation.longitude,
-        radius: 10
+        radius: optimizedRadius,
+        limit: 20
       }))
     } else {
       // Request geolocation
       dispatch(setLoadingLocation(true))
 
       if (navigator.geolocation) {
+        console.log('🎯 Nearby Pharmacies: Requesting your location...')
+
         navigator.geolocation.getCurrentPosition(
           (position) => {
+            console.log('✅ Nearby search - Location found:', position.coords.latitude, position.coords.longitude)
+
             const location: UserLocation = {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude
             }
             dispatch(setUserLocation(location))
             dispatch(setLoadingLocation(false))
+
+            // Use search radius from environment variable
+            const optimizedRadius = parseInt(import.meta.env.VITE_SEARCH_RADIUS) || 2000
+            console.log(`🎯 Fresh Location - Using optimized radius: ${optimizedRadius}km`)
+
             dispatch(fetchNearbyPharmacies({
               lat: location.latitude,
               lng: location.longitude,
-              radius: 10
+              radius: optimizedRadius,
+              limit: 20
             }))
+
+            console.log('🚀 Nearby search successful!')
           },
           (error) => {
-            console.error('Geolocation error:', error)
+            console.error('❌ Nearby search location error:', error)
             dispatch(setLoadingLocation(false))
-            // Fallback to Podgorica center
-            const defaultLocation = { latitude: 42.4415, longitude: 19.2621 }
-            dispatch(setUserLocation(defaultLocation))
-            dispatch(fetchNearbyPharmacies({
-              lat: defaultLocation.latitude,
-              lng: defaultLocation.longitude,
-              radius: 10
-            }))
+
+            let errorMessage = ''
+            switch (error.code) {
+              case error.PERMISSION_DENIED:
+                errorMessage = 'Location access denied. Please allow location access in your browser settings.'
+                console.log('📍 User denied location permission')
+                break
+              case error.POSITION_UNAVAILABLE:
+                errorMessage = 'Location information is unavailable. Please check your internet connection.'
+                console.log('📡 Location unavailable')
+                break
+              case error.TIMEOUT:
+                errorMessage = 'Location request timed out. Please try again.'
+                console.log('⏰ Location timeout')
+                break
+              default:
+                errorMessage = 'Unable to get your location. Please try again or select a city manually.'
+            }
+
+            alert(errorMessage)
+            dispatch(updateFilters({ nearby: false }))
+          },
+          {
+            enableHighAccuracy: false, // Same as Google Maps - use network location
+            timeout: 15000, // Same timeout as main location detection
+            maximumAge: 600000 // 10 minutes cache
           }
         )
       } else {
@@ -186,16 +225,20 @@ export default function SearchAndFilterSection(): React.JSX.Element {
             <button
               onClick={() => handleFilterToggle('nearby')}
               disabled={isLoadingLocation}
-              className={`px-3 py-1.5 rounded-md border text-xs font-medium transition-all duration-200 flex items-center gap-1 ${
+              className={`px-4 py-2 rounded-md border text-sm font-semibold transition-all duration-200 flex items-center gap-2 shadow-md ${
                 filters.nearby
-                  ? 'bg-primary text-white border-primary hover:bg-primary-hover shadow-sm'
-                  : 'bg-white text-text-primary border-border-light hover:bg-primary hover:text-white hover:border-primary'
+                  ? 'bg-primary text-white border-primary hover:bg-primary-hover shadow-lg transform scale-105'
+                  : 'bg-gradient-to-r from-primary to-primary-dark text-white border-primary hover:from-primary-hover hover:to-primary-dark hover:shadow-lg transform hover:scale-105'
               } ${isLoadingLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {isLoadingLocation && (
-                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current"></div>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
               )}
-              {t('filterNearby')}
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              📍 {t('filterNearby')}
             </button>
 
               <button

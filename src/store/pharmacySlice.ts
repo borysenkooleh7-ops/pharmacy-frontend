@@ -120,13 +120,13 @@ export const searchMedicines = createAsyncThunk<
 
 export const fetchNearbyPharmacies = createAsyncThunk<
   Pharmacy[],
-  { lat: number; lng: number; radius?: number },
+  { lat: number; lng: number; radius?: number; limit?: number },
   { rejectValue: string }
 >(
   'pharmacy/fetchNearbyPharmacies',
-  async ({ lat, lng, radius = 10 }, { rejectWithValue }) => {
+  async ({ lat, lng, radius = 10, limit = 20 }, { rejectWithValue }) => {
     try {
-      return await apiService.getNearbyPharmacies(lat, lng, radius)
+      return await apiService.getNearbyPharmacies(lat, lng, radius, limit)
     } catch (error: any) {
       return rejectWithValue(error.message)
     }
@@ -230,6 +230,12 @@ const pharmacySlice = createSlice({
     },
     clearMedicines: (state) => {
       state.medicines = []
+    },
+    setPharmacies: (state, action: PayloadAction<Pharmacy[]>) => {
+      state.pharmacies = action.payload
+      state.loading.pharmacies = false
+      state.error.pharmacies = null
+      state.filters.nearby = action.payload.length > 0
     },
     clearError: (state, action: PayloadAction<keyof PharmacyState['error']>) => {
       const errorType = action.payload
@@ -350,6 +356,7 @@ export const {
   setSearchTerm,
   clearFilters,
   clearMedicines,
+  setPharmacies,
   clearError,
   clearSubmissionSuccess
 } = pharmacySlice.actions

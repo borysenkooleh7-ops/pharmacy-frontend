@@ -159,8 +159,8 @@ class ApiService {
     return response.data
   }
 
-  async getNearbyPharmacies(lat: number, lng: number, radius: number = 10): Promise<Pharmacy[]> {
-    const response = await this.request<ApiResponse<Pharmacy[]>>(`/pharmacies/nearby/${lat}/${lng}?radius=${radius}`, { includeAuth: false })
+  async getNearbyPharmacies(lat: number, lng: number, radius: number = 10, limit: number = 20): Promise<Pharmacy[]> {
+    const response = await this.request<ApiResponse<Pharmacy[]>>(`/pharmacies/nearby/${lat}/${lng}?radius=${radius}&limit=${limit}`, { includeAuth: false })
     return response.data || []
   }
 
