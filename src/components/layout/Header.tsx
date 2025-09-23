@@ -100,7 +100,7 @@ export default function Header(): React.JSX.Element {
   }
 
   return (
-    <header className="bg-gradient-to-r from-primary to-secondary shadow-lg border-b border-gray-200">
+    <header className="bg-gradient-to-r from-[#6495ed] to-[#6495ed] shadow-lg border-b border-gray-200">
       <div className="container mx-auto px-6 py-6">
         {/* Top Row - Logo and Controls */}
         <div className="flex flex-col lg:flex-row justify-between items-center gap-6">
@@ -108,41 +108,11 @@ export default function Header(): React.JSX.Element {
             <button
              onClick={() => navigate("/")} className="text-center lg:text-left">
               <h1 className="text-4xl lg:text-7xl font-black relative perspective-1000" style={{fontFamily: 'Orbitron, Exo 2, Rajdhani, Inter, sans-serif', perspective: '1000px'}}>
-                {/* Deep 3D Shadow Layers - Multiple depths */}
-                <span className="absolute top-3 left-3 bg-gradient-to-r from-black/60 via-gray-900/70 to-black/60 bg-clip-text text-transparent select-none tracking-wider blur-[1px]">
-                  Apoteka24.me
-                </span>
-                <span className="absolute top-2.5 left-2.5 bg-gradient-to-r from-black/50 via-gray-800/60 to-black/50 bg-clip-text text-transparent select-none tracking-wider blur-[0.5px]">
-                  Apoteka24.me
-                </span>
-                <span className="absolute top-2 left-2 bg-gradient-to-r from-black/40 via-gray-700/50 to-black/40 bg-clip-text text-transparent select-none tracking-wider">
-                  Apoteka24.me
-                </span>
-                <span className="absolute top-1.5 left-1.5 bg-gradient-to-r from-black/30 via-gray-600/40 to-black/30 bg-clip-text text-transparent select-none tracking-wider">
-                  Apoteka24.me
-                </span>
-                <span className="absolute top-1 left-1 bg-gradient-to-r from-black/25 via-gray-500/35 to-black/25 bg-clip-text text-transparent select-none tracking-wider">
-                  Apoteka24.me
-                </span>
-                <span className="absolute top-0.5 left-0.5 bg-gradient-to-r from-black/15 via-gray-400/25 to-black/15 bg-clip-text text-transparent select-none tracking-wider">
-                  Apoteka24.me
-                </span>
                 {/* Main Text with Enhanced 3D Effects */}
                 <span
-                  className="relative z-10 bg-gradient-to-r from-[#ff8] via-cyan-200 to-[#afa] bg-clip-text text-transparent hover:from-yellow-200 hover:via-pink-200 hover:to-cyan-300 transition-all duration-700 ease-in-out cursor-pointer select-none tracking-wider hover:-translate-y-1 hover:translate-x-1"
+                  className="relative z-10 bg-gradient-to-r from-[#ff8] via-cyan-200 to-[#afa] bg-clip-text text-transparent cursor-pointer"
                   style={{
-                    textShadow: '0 0 10px rgba(255,255,255,0.5), 0 0 20px rgba(0,255,255,0.4), 0 0 30px rgba(255,255,0,0.3), 0 0 40px rgba(255,0,255,0.2)',
-                    filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.8)) drop-shadow(0 8px 16px rgba(0,0,0,0.4))',
-                    transform: 'rotateX(5deg) rotateY(-2deg)',
-                    transformStyle: 'preserve-3d'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'rotateX(8deg) rotateY(-4deg) scale(1.05) translateZ(10px)'
-                    e.currentTarget.style.filter = 'drop-shadow(0 8px 16px rgba(0,0,0,0.9)) drop-shadow(0 16px 32px rgba(0,0,0,0.6))'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'rotateX(5deg) rotateY(-2deg) scale(1) translateZ(0px)'
-                    e.currentTarget.style.filter = 'drop-shadow(0 4px 8px rgba(0,0,0,0.8)) drop-shadow(0 8px 16px rgba(0,0,0,0.4))'
+                    textShadow: '3px 5px 2px rgba(255, 255, 355, 1), 0 0 6px rgba(3, 28, 255, 1)',
                   }}
                 >
                   Apoteka24.me
