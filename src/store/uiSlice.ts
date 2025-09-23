@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { UserLocation, Pharmacy } from '@/types'
+import { initializeUserLocationAndPharmacies } from './pharmacySlice'
 
 interface UiState {
   language: 'me' | 'en'
@@ -36,6 +37,19 @@ const uiSlice = createSlice({
     setLoadingLocation: (state, action: PayloadAction<boolean>) => {
       state.isLoadingLocation = action.payload
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(initializeUserLocationAndPharmacies.pending, (state) => {
+        state.isLoadingLocation = true
+      })
+      .addCase(initializeUserLocationAndPharmacies.fulfilled, (state, action) => {
+        state.isLoadingLocation = false
+        state.userLocation = action.payload.location
+      })
+      .addCase(initializeUserLocationAndPharmacies.rejected, (state) => {
+        state.isLoadingLocation = false
+      })
   },
 })
 

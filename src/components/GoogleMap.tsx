@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { useAppDispatch, useAppSelector } from '../hooks/redux'
 import { Loader } from '@googlemaps/js-api-loader'
-import { setSelectedPharmacy } from '../store/pharmacySlice'
-import { deletePharmacy, fetchPharmacies } from '../store/slices/pharmaciesSlice'
+import { setSelectedPharmacy, fetchPharmacies, fetchNearbyPharmacies } from '../store/pharmacySlice'
+import { deletePharmacy } from '../store/slices/pharmaciesSlice'
 import { API_CONFIG } from '../config/api'
 import { useTranslation } from '../translations'
 import type { Pharmacy } from '../store/slices/types'
@@ -21,7 +21,7 @@ export default function GoogleMap(): React.JSX.Element {
   const userMarkerRef = useRef<any>(null)
   const dispatch = useAppDispatch()
 
-  const { pharmacies, selectedCity, selectedPharmacy } = useAppSelector(state => state.pharmacy)
+  const { pharmacies, selectedCity, selectedPharmacy, filters } = useAppSelector(state => state.pharmacy)
   const { language, userLocation } = useAppSelector(state => state.ui)
   const t = useTranslation(language)
 
@@ -40,24 +40,56 @@ export default function GoogleMap(): React.JSX.Element {
     console.log('Delete button clicked for pharmacy ID:', pharmacyId)
     console.log('Is admin:', isAdmin())
 
+    // Check if user is admin
     if (!isAdmin()) {
-      alert(t('notAuthorized'))
+      alert(t('notAuthorized') || 'Not authorized to delete pharmacies')
       return
     }
 
-    if (window.confirm(`${t('confirmDelete')} ${pharmacyId}?`)) {
+    // Find the pharmacy to get its name for confirmation
+    const pharmacy = pharmacies.find(p => p.id === pharmacyId)
+    const pharmacyName = pharmacy ? (language === 'me' ? pharmacy.name_me : (pharmacy.name_en || pharmacy.name_me)) : `ID ${pharmacyId}`
+
+    // Confirm deletion
+    if (window.confirm(`${t('confirmDelete') || 'Are you sure you want to delete this pharmacy'}: ${pharmacyName}?`)) {
       try {
         console.log('Attempting to delete pharmacy...')
+
+        // Dispatch the delete action
         await dispatch(deletePharmacy(pharmacyId)).unwrap()
+
         console.log('Pharmacy deleted successfully')
-        alert(t('pharmacyDeletedSuccess'))
-        // Refresh pharmacy list for current city
-        if (selectedCity) {
-          window.location.reload() // Simple refresh to update the map
+        alert(t('pharmacyDeletedSuccess') || 'Pharmacy deleted successfully')
+
+        // Refresh the pharmacy list based on current context
+        if (selectedCity && !filters.nearby) {
+          // If viewing city pharmacies, refresh city pharmacies
+          console.log('Refreshing city pharmacies after deletion')
+          dispatch(fetchPharmacies({
+            cityId: selectedCity.id,
+            unlimited: true,
+            ...filters
+          }))
+        } else if (filters.nearby && userLocation) {
+          // If viewing nearby pharmacies, refresh nearby search
+          console.log('Refreshing nearby pharmacies after deletion')
+          const defaultRadius = parseInt(import.meta.env.VITE_SEARCH_RADIUS) || 2000
+          const defaultLimit = parseInt(import.meta.env.VITE_N_PHARMACIES) || 20
+
+          dispatch(fetchNearbyPharmacies({
+            lat: userLocation.latitude,
+            lng: userLocation.longitude,
+            radius: defaultRadius,
+            limit: defaultLimit
+          }))
+        } else {
+          // If in some other state, reload to refresh
+          window.location.reload()
         }
+
       } catch (error: any) {
         console.error('Delete failed:', error)
-        alert(`${t('deletePharmacyFailed')}: ${error.message || t('unknownError')}`)
+        alert(`${t('deletePharmacyFailed') || 'Failed to delete pharmacy'}: ${error.message || t('unknownError') || 'Unknown error'}`)
       }
     }
   }
@@ -506,7 +538,8 @@ export default function GoogleMap(): React.JSX.Element {
       })
 
       // IMPORTANT: Also include user location in bounds to show both user and pharmacies
-      if (userLocation) {
+      // Only include user location when it's a nearby search (filters.nearby = true)
+      if (userLocation && filters.nearby) {
         bounds.extend({
           lat: userLocation.latitude,
           lng: userLocation.longitude

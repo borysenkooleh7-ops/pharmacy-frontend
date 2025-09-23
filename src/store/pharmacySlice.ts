@@ -124,9 +124,11 @@ export const fetchNearbyPharmacies = createAsyncThunk<
   { rejectValue: string }
 >(
   'pharmacy/fetchNearbyPharmacies',
-  async ({ lat, lng, radius = 10, limit = 20 }, { rejectWithValue }) => {
+  async ({ lat, lng, radius, limit }, { rejectWithValue }) => {
     try {
-      return await apiService.getNearbyPharmacies(lat, lng, radius, limit)
+      const defaultRadius = parseInt(import.meta.env.VITE_SEARCH_RADIUS) || 2000
+      const defaultLimit = parseInt(import.meta.env.VITE_N_PHARMACIES) || 20
+      return await apiService.getNearbyPharmacies(lat, lng, radius || defaultRadius, limit || defaultLimit)
     } catch (error: any) {
       return rejectWithValue(error.message)
     }
@@ -157,6 +159,73 @@ export const submitPharmacy = createAsyncThunk<
   async (submissionData, { rejectWithValue }) => {
     try {
       return await apiService.createSubmission(submissionData)
+    } catch (error: any) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
+export const initializeUserLocationAndPharmacies = createAsyncThunk<
+  { location: { latitude: number; longitude: number }; pharmacies: Pharmacy[] },
+  void,
+  { rejectValue: string }
+>(
+  'pharmacy/initializeUserLocationAndPharmacies',
+  async (_, { rejectWithValue }) => {
+    try {
+      // Try IP-based location first
+      let location = null
+
+      try {
+        const ipResponse = await fetch('https://ipapi.co/json/')
+        const ipData = await ipResponse.json()
+
+        if (ipData.latitude && ipData.longitude) {
+          location = {
+            latitude: ipData.latitude,
+            longitude: ipData.longitude
+          }
+        }
+      } catch (error) {
+        console.warn('IP location failed, trying GPS:', error)
+      }
+
+      // Fallback to GPS if IP location failed
+      if (!location) {
+        try {
+          const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(
+              resolve,
+              reject,
+              {
+                enableHighAccuracy: false,
+                timeout: 15000,
+                maximumAge: 600000 // 10 minutes cache
+              }
+            )
+          })
+
+          location = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          }
+        } catch (error) {
+          throw new Error('Could not determine user location')
+        }
+      }
+
+      // Fetch nearby pharmacies
+      const defaultRadius = parseInt(import.meta.env.VITE_SEARCH_RADIUS) || 2000
+      const defaultLimit = parseInt(import.meta.env.VITE_N_PHARMACIES) || 20
+
+      const pharmacies = await apiService.getNearbyPharmacies(
+        location.latitude,
+        location.longitude,
+        defaultRadius,
+        defaultLimit
+      )
+
+      return { location, pharmacies }
     } catch (error: any) {
       return rejectWithValue(error.message)
     }
@@ -199,6 +268,8 @@ const pharmacySlice = createSlice({
     setSelectedCity: (state, action: PayloadAction<City | null>) => {
       state.selectedCity = action.payload
       state.pharmacies = []
+      // Clear nearby filter when selecting a city to allow city pharmacy fetching
+      state.filters.nearby = false
     },
     setSelectedPharmacy: (state, action: PayloadAction<Pharmacy | null>) => {
       state.selectedPharmacy = action.payload
@@ -343,6 +414,22 @@ const pharmacySlice = createSlice({
         state.loading.submission = false
         state.error.submission = action.payload || 'Failed to submit pharmacy'
         state.submissionSuccess = false
+      })
+
+      // Initialize User Location and Pharmacies
+      .addCase(initializeUserLocationAndPharmacies.pending, (state) => {
+        state.loading.pharmacies = true
+        state.error.pharmacies = null
+      })
+      .addCase(initializeUserLocationAndPharmacies.fulfilled, (state, action) => {
+        state.loading.pharmacies = false
+        state.pharmacies = action.payload.pharmacies
+        state.filters.nearby = true
+        state.error.pharmacies = null
+      })
+      .addCase(initializeUserLocationAndPharmacies.rejected, (state, action) => {
+        state.loading.pharmacies = false
+        state.error.pharmacies = action.payload || 'Failed to initialize location and pharmacies'
       })
   },
 })

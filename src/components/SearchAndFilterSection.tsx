@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '../hooks/redux'
-import { updateFilters, clearFilters, fetchNearbyPharmacies, searchMedicines, clearMedicines, setSearchType, setSelectedCity } from '../store/pharmacySlice'
-import { setUserLocation, setLoadingLocation } from '../store/uiSlice'
+import { updateFilters, clearFilters, initializeUserLocationAndPharmacies, searchMedicines, clearMedicines, setSearchType, setSelectedCity } from '../store/pharmacySlice'
 import { useTranslation } from '../translations'
 import LoadingSpinner from './ui/LoadingSpinner'
 import { PharmacyIcon, MedicineIcon } from './ui/Icons'
-import type { Medicine, UserLocation } from '../store/slices/types'
+import type { Medicine } from '../store/slices/types'
 
 export default function SearchAndFilterSection(): React.JSX.Element {
   const dispatch = useAppDispatch()
-  const { language, userLocation, isLoadingLocation } = useAppSelector(state => state.ui)
+  const { language, isLoadingLocation } = useAppSelector(state => state.ui)
   const {
     searchType,
     filters,
@@ -17,6 +16,8 @@ export default function SearchAndFilterSection(): React.JSX.Element {
     loading,
     error
   } = useAppSelector(state => state.pharmacy)
+
+  const isNearbyLoading = isLoadingLocation || loading.pharmacies
   const [medicineSearchTerm, setMedicineSearchTerm] = useState('')
   const t = useTranslation(language)
 
@@ -57,89 +58,9 @@ export default function SearchAndFilterSection(): React.JSX.Element {
       return
     }
 
-    // Clear selected city when using nearby search
+    // Clear selected city when using nearby search and trigger the same logic as initial rendering
     dispatch(setSelectedCity(null))
-
-    if (userLocation) {
-      // Calculate optimal radius for user's location
-      // Use search radius from environment variable
-      const optimizedRadius = parseInt(import.meta.env.VITE_SEARCH_RADIUS) || 2000
-      console.log(`🎯 Nearby Search - Using optimized radius: ${optimizedRadius}km for your location`)
-
-      // Use existing location with optimized radius
-      dispatch(fetchNearbyPharmacies({
-        lat: userLocation.latitude,
-        lng: userLocation.longitude,
-        radius: optimizedRadius,
-        limit: 20
-      }))
-    } else {
-      // Request geolocation
-      dispatch(setLoadingLocation(true))
-
-      if (navigator.geolocation) {
-        console.log('🎯 Nearby Pharmacies: Requesting your location...')
-
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            console.log('✅ Nearby search - Location found:', position.coords.latitude, position.coords.longitude)
-
-            const location: UserLocation = {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude
-            }
-            dispatch(setUserLocation(location))
-            dispatch(setLoadingLocation(false))
-
-            // Use search radius from environment variable
-            const optimizedRadius = parseInt(import.meta.env.VITE_SEARCH_RADIUS) || 2000
-            console.log(`🎯 Fresh Location - Using optimized radius: ${optimizedRadius}km`)
-
-            dispatch(fetchNearbyPharmacies({
-              lat: location.latitude,
-              lng: location.longitude,
-              radius: optimizedRadius,
-              limit: 20
-            }))
-
-            console.log('🚀 Nearby search successful!')
-          },
-          (error) => {
-            console.error('❌ Nearby search location error:', error)
-            dispatch(setLoadingLocation(false))
-
-            let errorMessage = ''
-            switch (error.code) {
-              case error.PERMISSION_DENIED:
-                errorMessage = 'Location access denied. Please allow location access in your browser settings.'
-                console.log('📍 User denied location permission')
-                break
-              case error.POSITION_UNAVAILABLE:
-                errorMessage = 'Location information is unavailable. Please check your internet connection.'
-                console.log('📡 Location unavailable')
-                break
-              case error.TIMEOUT:
-                errorMessage = 'Location request timed out. Please try again.'
-                console.log('⏰ Location timeout')
-                break
-              default:
-                errorMessage = 'Unable to get your location. Please try again or select a city manually.'
-            }
-
-            alert(errorMessage)
-            dispatch(updateFilters({ nearby: false }))
-          },
-          {
-            enableHighAccuracy: false, // Same as Google Maps - use network location
-            timeout: 15000, // Same timeout as main location detection
-            maximumAge: 600000 // 10 minutes cache
-          }
-        )
-      } else {
-        dispatch(setLoadingLocation(false))
-        alert('Geolocation is not supported by this browser.')
-      }
-    }
+    dispatch(initializeUserLocationAndPharmacies())
   }
 
   const handleClearFilters = () => {
@@ -224,14 +145,14 @@ export default function SearchAndFilterSection(): React.JSX.Element {
 
             <button
               onClick={() => handleFilterToggle('nearby')}
-              disabled={isLoadingLocation}
+              disabled={isNearbyLoading}
               className={`px-4 py-2 rounded-md border text-sm font-semibold transition-all duration-200 flex items-center gap-2 shadow-md ${
                 filters.nearby
                   ? 'bg-primary text-white border-primary hover:bg-primary-hover shadow-lg transform scale-105'
                   : 'bg-gradient-to-r from-primary to-primary-dark text-white border-primary hover:from-primary-hover hover:to-primary-dark hover:shadow-lg transform hover:scale-105'
-              } ${isLoadingLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
+              } ${isNearbyLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {isLoadingLocation && (
+              {isNearbyLoading && (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
               )}
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
